@@ -1,11 +1,12 @@
 {
   "name": "mediator",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "scripts": {
     "start": "node index.js"
   },
   "dependencies": {
     "express": "^4.18.2",
-    "@anthropic-ai/sdk": "^0.20.0"
+    "@anthropic-ai/sdk": "^0.20.0",
+    "@upstash/redis": "^1.34.0"
   }
 }
