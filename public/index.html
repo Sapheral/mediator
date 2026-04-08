@@ -326,6 +326,20 @@ async function pollStatus() {
 
   try {
     const r = await fetch(`/api/room/status?code=${S.code}&token=${S.token}`);
+
+    // Room expired or not found
+    if (r.status === 404) {
+      if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
+      sessionStorage.removeItem('mediator_session');
+      document.getElementById('phase-room').innerHTML = `
+        <div class="error-card">
+          <div class="error-title">房间已过期</div>
+          <div class="error-msg">这个房间已经不存在了（房间会在创建 24 小时后自动过期）。</div>
+          <button class="btn btn-primary" style="margin-top:12px;" onclick="window.location.href='/'">重新开始</button>
+        </div>`;
+      return;
+    }
+
     if (!r.ok) return;
     const data = await r.json();
 
