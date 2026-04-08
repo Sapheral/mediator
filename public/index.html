@@ -10,6 +10,18 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif
 .app { max-width: 640px; margin: 0 auto; }
 h1 { font-size: 22px; font-weight: 500; margin-bottom: 4px; }
 .subtitle { font-size: 14px; color: #888; margin-bottom: 1.5rem; }
+
+/* Name entry */
+.name-section { margin-bottom: 1rem; }
+.name-row { display: flex; gap: 12px; margin-bottom: 12px; }
+.name-field { flex: 1; }
+.name-field label { display: block; font-size: 13px; color: #888; margin-bottom: 6px; }
+.name-input { width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 15px; font-family: inherit; background: white; }
+.name-input:focus { outline: none; border-color: #aaa; }
+.name-input.a:focus { border-color: #1D9E75; }
+.name-input.b:focus { border-color: #378ADD; }
+.name-hint { font-size: 12px; color: #bbb; margin-bottom: 1rem; }
+
 .tabs { display: flex; gap: 8px; margin-bottom: 1rem; }
 .tab { flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; background: white; color: #888; cursor: pointer; }
 .tab.active-a { border-color: #1D9E75; background: #E1F5EE; color: #0F6E56; font-weight: 500; }
@@ -77,17 +89,31 @@ textarea:focus { outline: none; border-color: #aaa; }
   <p class="subtitle">两人分别写下各自的感受，AI 在保护隐私的前提下给出分析。</p>
 
   <div id="phase-input">
+    <div class="name-section">
+      <div class="name-row">
+        <div class="name-field">
+          <label>第一个人的昵称</label>
+          <input type="text" class="name-input a" id="name-a" placeholder="比如：小明" maxlength="20" oninput="updateNames()">
+        </div>
+        <div class="name-field">
+          <label>第二个人的昵称</label>
+          <input type="text" class="name-input b" id="name-b" placeholder="比如：小红" maxlength="20" oninput="updateNames()">
+        </div>
+      </div>
+      <p class="name-hint">昵称仅用于区分双方，不会影响分析结果。</p>
+    </div>
+
     <div class="tabs">
-      <button class="tab active-a" id="tab-a" onclick="switchTab('a')">A 的视角</button>
-      <button class="tab" id="tab-b" onclick="switchTab('b')">B 的视角</button>
+      <button class="tab active-a" id="tab-a" onclick="switchTab('a')"><span id="tab-a-text">A 的视角</span></button>
+      <button class="tab" id="tab-b" onclick="switchTab('b')"><span id="tab-b-text">B 的视角</span></button>
     </div>
     <div class="input-area visible" id="area-a">
-      <p class="input-label">A，说说这件事对你来说是什么感受？发生了什么？</p>
+      <p class="input-label" id="label-a">A，说说这件事对你来说是什么感受？发生了什么？</p>
       <textarea id="input-a" placeholder="写下你想说的……" maxlength="500" oninput="updateState()"></textarea>
       <div class="char-count" id="count-a">0 / 500</div>
     </div>
     <div class="input-area" id="area-b">
-      <p class="input-label">B，说说这件事对你来说是什么感受？发生了什么？</p>
+      <p class="input-label" id="label-b">B，说说这件事对你来说是什么感受？发生了什么？</p>
       <textarea id="input-b" placeholder="写下你想说的……" maxlength="500" oninput="updateState()"></textarea>
       <div class="char-count" id="count-b">0 / 500</div>
     </div>
@@ -104,15 +130,15 @@ textarea:focus { outline: none; border-color: #aaa; }
     <div class="divider"></div>
     <p class="section-label">追问</p>
     <div class="ftabs">
-      <button class="ftab active-a" id="ftab-a" onclick="switchFtab('a')">A 追问</button>
-      <button class="ftab" id="ftab-b" onclick="switchFtab('b')">B 追问</button>
+      <button class="ftab active-a" id="ftab-a" onclick="switchFtab('a')"><span id="ftab-a-text">A 追问</span></button>
+      <button class="ftab" id="ftab-b" onclick="switchFtab('b')"><span id="ftab-b-text">B 追问</span></button>
     </div>
     <div class="farea visible" id="farea-a">
-      <textarea id="finput-a" placeholder="A：我想进一步说明……" maxlength="300" oninput="updateF()"></textarea>
+      <textarea id="finput-a" placeholder="我想进一步说明……" maxlength="300" oninput="updateF()"></textarea>
       <div class="fchar-count" id="fcount-a">0 / 300</div>
     </div>
     <div class="farea" id="farea-b">
-      <textarea id="finput-b" placeholder="B：我想进一步说明……" maxlength="300" oninput="updateF()"></textarea>
+      <textarea id="finput-b" placeholder="我想进一步说明……" maxlength="300" oninput="updateF()"></textarea>
       <div class="fchar-count" id="fcount-b">0 / 300</div>
     </div>
     <button class="btn-followup" id="btn-f" onclick="followup()">提交追问</button>
@@ -123,7 +149,38 @@ textarea:focus { outline: none; border-color: #aaa; }
 </div>
 
 <script>
-let S = { inputA:'', inputB:'', forA:'', forB:'', forBoth:'', consentA:false, consentB:false, ftab:'a', history:[] };
+function esc(str) {
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+
+let S = {
+  inputA: '', inputB: '',
+  forA: '', forB: '', forBoth: '',
+  consentA: false, consentB: false,
+  ftab: 'a',
+  historyA: [], historyB: [],       // separate history per party
+  feelingSummaryA: '', feelingSummaryB: '',  // evolving feeling summaries
+  nameA: '', nameB: ''
+};
+
+function getNameA() { return S.nameA || 'A'; }
+function getNameB() { return S.nameB || 'B'; }
+
+function updateNames() {
+  S.nameA = document.getElementById('name-a').value.trim();
+  S.nameB = document.getElementById('name-b').value.trim();
+  const nA = getNameA();
+  const nB = getNameB();
+  document.getElementById('tab-a-text').textContent = nA + ' 的视角';
+  document.getElementById('tab-b-text').textContent = nB + ' 的视角';
+  document.getElementById('label-a').textContent = nA + '，说说这件事对你来说是什么感受？发生了什么？';
+  document.getElementById('label-b').textContent = nB + '，说说这件事对你来说是什么感受？发生了什么？';
+  document.getElementById('ftab-a-text').textContent = nA + ' 追问';
+  document.getElementById('ftab-b-text').textContent = nB + ' 追问';
+  updateState();
+}
 
 function switchTab(t) {
   ['a','b'].forEach(x => {
@@ -135,6 +192,8 @@ function switchTab(t) {
 function updateState() {
   const a = document.getElementById('input-a').value;
   const b = document.getElementById('input-b').value;
+  const nA = getNameA();
+  const nB = getNameB();
   const ca = document.getElementById('count-a');
   const cb = document.getElementById('count-b');
   ca.textContent = a.length + ' / 500';
@@ -142,9 +201,9 @@ function updateState() {
   ca.className = 'char-count' + (a.length > 450 ? ' warning' : '');
   cb.className = 'char-count' + (b.length > 450 ? ' warning' : '');
   const at = a.trim(); const bt = b.trim();
-  document.getElementById('pill-a').textContent = at ? 'A 已填写' : 'A 还未填写';
+  document.getElementById('pill-a').textContent = at ? nA + ' 已填写' : nA + ' 还未填写';
   document.getElementById('pill-a').className = 'pill' + (at ? ' a' : '');
-  document.getElementById('pill-b').textContent = bt ? 'B 已填写' : 'B 还未填写';
+  document.getElementById('pill-b').textContent = bt ? nB + ' 已填写' : nB + ' 还未填写';
   document.getElementById('pill-b').className = 'pill' + (bt ? ' b' : '');
   document.getElementById('btn-submit').className = 'btn-main' + (at && bt ? ' ready' : '');
 }
@@ -167,11 +226,22 @@ function updateF() {
 }
 
 function clearAll() {
-  S = { inputA:'', inputB:'', forA:'', forB:'', forBoth:'', consentA:false, consentB:false, ftab:'a', history:[] };
+  S = {
+    inputA: '', inputB: '',
+    forA: '', forB: '', forBoth: '',
+    consentA: false, consentB: false,
+    ftab: 'a',
+    historyA: [], historyB: [],
+    feelingSummaryA: '', feelingSummaryB: '',
+    nameA: '', nameB: ''
+  };
   document.getElementById('input-a').value = '';
   document.getElementById('input-b').value = '';
+  document.getElementById('name-a').value = '';
+  document.getElementById('name-b').value = '';
   document.getElementById('phase-input').style.display = 'block';
   document.getElementById('phase-result').style.display = 'none';
+  updateNames();
   updateState();
 }
 
@@ -179,33 +249,35 @@ function showError(container, msg) {
   container.innerHTML = `
     <div class="error-card">
       <div class="error-title">出现了一些问题</div>
-      <div class="error-msg">${msg}</div>
+      <div class="error-msg">${esc(msg)}</div>
       <button class="btn-clear" style="width:auto;padding:8px 16px;margin-top:0;" onclick="clearAll()">重新开始</button>
     </div>`;
 }
 
 function renderResults() {
+  const nA = getNameA();
+  const nB = getNameB();
   const unlocked = S.consentA && S.consentB;
   let status = !S.consentA && !S.consentB ? '双方都同意后，将显示共同总结'
-    : S.consentA ? 'A 已同意，等待 B' : 'B 已同意，等待 A';
+    : S.consentA ? nA + ' 已同意，等待 ' + nB : nB + ' 已同意，等待 ' + nA;
   if (unlocked) status = '双方已同意';
 
   document.getElementById('results').innerHTML = `
     <div class="card">
-      <div class="card-header a">A，我想告诉你</div>
-      <div class="card-body">${S.forA}</div>
+      <div class="card-header a">${esc(nA)}，我想告诉你</div>
+      <div class="card-body">${esc(S.forA)}</div>
     </div>
     <div class="card">
-      <div class="card-header b">B，我想告诉你</div>
-      <div class="card-body">${S.forB}</div>
+      <div class="card-header b">${esc(nB)}，我想告诉你</div>
+      <div class="card-body">${esc(S.forB)}</div>
     </div>
     <div class="card">
       <div class="card-header both">关于这件事</div>
-      ${unlocked ? `<div class="card-body">${S.forBoth}</div>` : `<div class="card-body locked">双方同意分享后显示……</div>`}
+      ${unlocked ? `<div class="card-body">${esc(S.forBoth)}</div>` : `<div class="card-body locked">双方同意分享后显示……</div>`}
       <div class="consent-row">
-        <span class="consent-status">${status}</span>
-        <button class="consent-btn ${S.consentA?'done-a':''}" onclick="agree('a')">${S.consentA?'A 已同意':'A 同意'}</button>
-        <button class="consent-btn ${S.consentB?'done-b':''}" onclick="agree('b')">${S.consentB?'B 已同意':'B 同意'}</button>
+        <span class="consent-status">${esc(status)}</span>
+        <button class="consent-btn ${S.consentA?'done-a':''}" onclick="agree('a')">${S.consentA ? esc(nA)+' 已同意' : esc(nA)+' 同意'}</button>
+        <button class="consent-btn ${S.consentB?'done-b':''}" onclick="agree('b')">${S.consentB ? esc(nB)+' 已同意' : esc(nB)+' 同意'}</button>
       </div>
     </div>`;
 }
@@ -217,11 +289,19 @@ function agree(who) {
 }
 
 function renderHistory() {
-  document.getElementById('fhistory').innerHTML = S.history.map(h => `
+  const nA = getNameA();
+  const nB = getNameB();
+  // Merge and display all history in chronological order
+  const all = [
+    ...S.historyA.map(h => ({ ...h, who: 'a' })),
+    ...S.historyB.map(h => ({ ...h, who: 'b' }))
+  ].sort((a, b) => a.ts - b.ts);
+
+  document.getElementById('fhistory').innerHTML = all.map(h => `
     <div class="fitem">
-      <div class="fitem-who ${h.who}">${h.who.toUpperCase()} 的追问</div>
-      <div class="fitem-q">${h.question}</div>
-      <div class="fitem-ans">${h.answer}</div>
+      <div class="fitem-who ${h.who}">${esc(h.who === 'a' ? nA : nB)} 的追问</div>
+      <div class="fitem-q">${esc(h.question)}</div>
+      <div class="fitem-ans">${esc(h.answer)}</div>
     </div>`).join('');
 }
 
@@ -230,6 +310,8 @@ async function analyze() {
   const b = document.getElementById('input-b').value.trim();
   if (!a || !b) return;
   S.inputA = a; S.inputB = b;
+  const nA = getNameA();
+  const nB = getNameB();
 
   document.getElementById('btn-submit').className = 'btn-main loading';
   document.getElementById('btn-submit').textContent = '分析中…';
@@ -242,12 +324,16 @@ async function analyze() {
     const r = await fetch('/api/analyze', {
       method: 'POST',
       headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({ inputA: a, inputB: b })
+      body: JSON.stringify({ inputA: a, inputB: b, nameA: nA, nameB: nB })
     });
     if (!r.ok) throw new Error('服务器响应异常（' + r.status + '）');
     const data = await r.json();
     if (data.error) throw new Error(data.error);
-    S.forA = data.forA; S.forB = data.forB; S.forBoth = data.forBoth;
+    S.forA = data.forA;
+    S.forB = data.forB;
+    S.forBoth = data.forBoth;
+    S.feelingSummaryA = data.feelingSummaryA;
+    S.feelingSummaryB = data.feelingSummaryB;
     renderResults();
   } catch(e) {
     showError(rs, '分析时遇到了问题：' + e.message + '。请稍等片刻后重新开始。');
@@ -260,24 +346,52 @@ async function followup() {
   const who = S.ftab;
   const q = document.getElementById('finput-'+who).value.trim();
   if (!q) return;
+  const nA = getNameA();
+  const nB = getNameB();
+  const currentName = who === 'a' ? nA : nB;
+
+  // Determine own history and summaries
+  const ownHistory = who === 'a' ? S.historyA : S.historyB;
+  const ownFeelingSummary = who === 'a' ? S.feelingSummaryA : S.feelingSummaryB;
+  const otherFeelingSummary = who === 'a' ? S.feelingSummaryB : S.feelingSummaryA;
 
   document.getElementById('btn-f').className = 'btn-followup';
   const fh = document.getElementById('fhistory');
   const tmp = document.createElement('div');
   tmp.className = 'fitem';
-  tmp.innerHTML = `<div class="fitem-who ${who}">${who.toUpperCase()} 的追问</div><div class="fitem-q">${q}</div><div class="fitem-ans"><div class="dots"><span></span><span></span><span></span></div></div>`;
+  tmp.innerHTML = `<div class="fitem-who ${who}">${esc(currentName)} 的追问</div><div class="fitem-q">${esc(q)}</div><div class="fitem-ans"><div class="dots"><span></span><span></span><span></span></div></div>`;
   fh.appendChild(tmp);
 
   try {
     const r = await fetch('/api/followup', {
       method: 'POST',
       headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({ who, question: q, inputA: S.inputA, inputB: S.inputB, summaryA: S.forA, summaryB: S.forB, history: S.history })
+      body: JSON.stringify({
+        who,
+        question: q,
+        inputA: S.inputA,
+        inputB: S.inputB,
+        ownHistory,
+        ownFeelingSummary,
+        otherFeelingSummary,
+        nameA: nA,
+        nameB: nB
+      })
     });
     if (!r.ok) throw new Error('服务器响应异常（' + r.status + '）');
     const data = await r.json();
     if (data.error) throw new Error(data.error);
-    S.history.push({ who, question: q, answer: data.answer });
+
+    // Store in the correct party's history
+    const entry = { question: q, answer: data.answer, ts: Date.now() };
+    if (who === 'a') {
+      S.historyA.push(entry);
+      S.feelingSummaryA = data.updatedFeelingSummary;
+    } else {
+      S.historyB.push(entry);
+      S.feelingSummaryB = data.updatedFeelingSummary;
+    }
+
     document.getElementById('finput-'+who).value = '';
     updateF();
     renderHistory();
