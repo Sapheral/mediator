@@ -10,72 +10,74 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif
 .app { max-width: 640px; margin: 0 auto; }
 h1 { font-size: 22px; font-weight: 500; margin-bottom: 4px; }
 .subtitle { font-size: 14px; color: #888; margin-bottom: 1.5rem; }
+.hidden { display: none !important; }
 
-/* Name entry */
-.name-section { margin-bottom: 1rem; }
-.name-row { display: flex; gap: 12px; margin-bottom: 12px; }
-.name-field { flex: 1; }
-.name-field label { display: block; font-size: 13px; color: #888; margin-bottom: 6px; }
-.name-input { width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 15px; font-family: inherit; background: white; }
-.name-input:focus { outline: none; border-color: #aaa; }
-.name-input.a:focus { border-color: #1D9E75; }
-.name-input.b:focus { border-color: #378ADD; }
-.name-hint { font-size: 12px; color: #bbb; margin-bottom: 1rem; }
+/* Entry phase */
+.entry-card { border: 1px solid #e0e0e0; border-radius: 12px; background: white; padding: 20px; margin-bottom: 12px; }
+.entry-title { font-size: 15px; font-weight: 500; margin-bottom: 12px; }
+.entry-desc { font-size: 13px; color: #888; margin-bottom: 12px; line-height: 1.6; }
+.field { margin-bottom: 12px; }
+.field label { display: block; font-size: 13px; color: #888; margin-bottom: 6px; }
+.field input { width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 15px; font-family: inherit; background: white; }
+.field input:focus { outline: none; border-color: #aaa; }
+.or-divider { text-align: center; font-size: 13px; color: #bbb; margin: 16px 0; }
 
-.tabs { display: flex; gap: 8px; margin-bottom: 1rem; }
-.tab { flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; background: white; color: #888; cursor: pointer; }
-.tab.active-a { border-color: #1D9E75; background: #E1F5EE; color: #0F6E56; font-weight: 500; }
-.tab.active-b { border-color: #378ADD; background: #E6F1FB; color: #185FA5; font-weight: 500; }
-.input-area { display: none; }
-.input-area.visible { display: block; }
+.btn { padding: 12px 20px; border-radius: 8px; font-size: 15px; font-weight: 500; cursor: pointer; border: none; width: 100%; }
+.btn-primary { background: #222; color: white; }
+.btn-primary:disabled { opacity: 0.35; cursor: default; }
+.btn-secondary { background: white; color: #222; border: 1px solid #ddd; margin-top: 8px; }
+
+/* Room code display */
+.code-display { text-align: center; margin: 16px 0; }
+.code-value { font-size: 32px; font-weight: 600; letter-spacing: 6px; color: #222; font-family: 'SF Mono', 'Menlo', monospace; }
+.code-hint { font-size: 13px; color: #888; margin-top: 8px; }
+.btn-copy { padding: 8px 16px; border-radius: 8px; font-size: 13px; cursor: pointer; border: 1px solid #ddd; background: white; color: #666; margin-top: 8px; }
+
+/* Status indicators */
+.status-bar { padding: 10px 14px; border-radius: 8px; font-size: 13px; text-align: center; margin-bottom: 12px; }
+.status-waiting { background: #FFF8E6; color: #8B6914; border: 1px solid #F0D87A; }
+.status-ok { background: #E1F5EE; color: #0F6E56; border: 1px solid #1D9E75; }
+.status-analyzing { background: #E6F1FB; color: #185FA5; border: 1px solid #378ADD; }
+
+/* Input area */
 .input-label { font-size: 13px; color: #888; margin-bottom: 6px; }
 textarea { width: 100%; min-height: 130px; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 15px; font-family: inherit; resize: vertical; line-height: 1.6; background: white; }
 textarea:focus { outline: none; border-color: #aaa; }
 .char-count { text-align: right; font-size: 12px; color: #bbb; margin-top: 4px; }
 .char-count.warning { color: #e07000; }
-.status-row { display: flex; gap: 8px; margin: 1rem 0; }
-.pill { flex: 1; padding: 8px; border-radius: 8px; font-size: 13px; text-align: center; border: 1px solid #ddd; background: #fafafa; color: #aaa; }
-.pill.a { background: #E1F5EE; border-color: #1D9E75; color: #0F6E56; }
-.pill.b { background: #E6F1FB; border-color: #378ADD; color: #185FA5; }
-.btn-main { width: 100%; padding: 12px; border-radius: 8px; font-size: 15px; font-weight: 500; cursor: pointer; border: none; background: #222; color: white; opacity: 0.35; pointer-events: none; }
-.btn-main.ready { opacity: 1; pointer-events: auto; }
-.btn-main.loading { opacity: 0.6; pointer-events: none; }
-.btn-clear { width: 100%; padding: 10px; border-radius: 8px; font-size: 14px; cursor: pointer; border: 1px solid #ddd; background: white; color: #888; margin-top: 8px; }
-.results { margin-top: 1.5rem; }
+
+/* Result cards */
 .card { border: 1px solid #e0e0e0; border-radius: 12px; background: white; overflow: hidden; margin-bottom: 12px; }
 .card-header { padding: 10px 14px; font-size: 13px; font-weight: 500; border-bottom: 1px solid #eee; }
-.card-header.a { background: #E1F5EE; color: #0F6E56; }
-.card-header.b { background: #E6F1FB; color: #185FA5; }
+.card-header.mine { background: #E1F5EE; color: #0F6E56; }
 .card-header.both { background: #FAEEDA; color: #854F0B; }
 .card-header.neutral { background: #f5f5f5; color: #666; }
 .card-body { padding: 14px; font-size: 15px; line-height: 1.75; color: #222; white-space: pre-wrap; }
 .card-body.locked { color: #bbb; font-size: 14px; }
-.error-card { border: 1px solid #f0c0c0; border-radius: 12px; background: #fff8f8; padding: 16px; margin-bottom: 12px; }
-.error-title { font-size: 14px; font-weight: 500; color: #c00; margin-bottom: 8px; }
-.error-msg { font-size: 14px; color: #666; line-height: 1.6; margin-bottom: 12px; }
+
 .consent-row { display: flex; gap: 8px; padding: 10px 14px; border-top: 1px solid #eee; background: #fafafa; align-items: center; }
 .consent-status { font-size: 13px; color: #888; flex: 1; }
 .consent-btn { padding: 6px 12px; border-radius: 8px; font-size: 13px; cursor: pointer; border: 1px solid #ddd; background: white; }
-.consent-btn.done-a { background: #E1F5EE; border-color: #1D9E75; color: #0F6E56; pointer-events: none; }
-.consent-btn.done-b { background: #E6F1FB; border-color: #378ADD; color: #185FA5; pointer-events: none; }
+.consent-btn.done { background: #E1F5EE; border-color: #1D9E75; color: #0F6E56; pointer-events: none; }
+
+.error-card { border: 1px solid #f0c0c0; border-radius: 12px; background: #fff8f8; padding: 16px; margin-bottom: 12px; }
+.error-title { font-size: 14px; font-weight: 500; color: #c00; margin-bottom: 8px; }
+.error-msg { font-size: 14px; color: #666; line-height: 1.6; }
+
 .divider { height: 1px; background: #eee; margin: 1.5rem 0; }
 .section-label { font-size: 12px; color: #bbb; margin-bottom: 10px; letter-spacing: 0.05em; }
-.ftabs { display: flex; gap: 6px; margin-bottom: 10px; }
-.ftab { padding: 6px 14px; border-radius: 8px; font-size: 13px; cursor: pointer; border: 1px solid #ddd; background: white; color: #888; }
-.ftab.active-a { background: #E1F5EE; border-color: #1D9E75; color: #0F6E56; }
-.ftab.active-b { background: #E6F1FB; border-color: #378ADD; color: #185FA5; }
-.farea { display: none; }
-.farea.visible { display: block; }
-.fchar-count { text-align: right; font-size: 12px; color: #bbb; margin-top: 4px; }
-.fchar-count.warning { color: #e07000; }
-.btn-followup { margin-top: 8px; padding: 10px 16px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; border: none; background: #222; color: white; opacity: 0.35; pointer-events: none; }
-.btn-followup.ready { opacity: 1; pointer-events: auto; }
+
+/* Follow-up */
 .fitem { border: 1px solid #e0e0e0; border-radius: 12px; overflow: hidden; margin-top: 10px; }
-.fitem-who { padding: 8px 14px; font-size: 12px; font-weight: 500; border-bottom: 1px solid #eee; }
-.fitem-who.a { background: #E1F5EE; color: #0F6E56; }
-.fitem-who.b { background: #E6F1FB; color: #185FA5; }
+.fitem-who { padding: 8px 14px; font-size: 12px; font-weight: 500; border-bottom: 1px solid #eee; background: #f5f5f5; color: #666; }
 .fitem-q { padding: 10px 14px; font-size: 14px; color: #888; font-style: italic; border-bottom: 1px solid #eee; }
 .fitem-ans { padding: 12px 14px; font-size: 15px; line-height: 1.75; color: #222; white-space: pre-wrap; }
+
+.btn-followup { margin-top: 8px; padding: 10px 16px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; border: none; background: #222; color: white; }
+.btn-followup:disabled { opacity: 0.35; cursor: default; }
+.fchar-count { text-align: right; font-size: 12px; color: #bbb; margin-top: 4px; }
+.fchar-count.warning { color: #e07000; }
+
 .dots { display: inline-flex; gap: 4px; }
 .dots span { width: 6px; height: 6px; border-radius: 50%; background: #aaa; animation: b 1.2s infinite; }
 .dots span:nth-child(2) { animation-delay: .2s; }
@@ -88,63 +90,100 @@ textarea:focus { outline: none; border-color: #aaa; }
   <h1>调解室</h1>
   <p class="subtitle">两人分别写下各自的感受，AI 在保护隐私的前提下给出分析。</p>
 
-  <div id="phase-input">
-    <div class="name-section">
-      <div class="name-row">
-        <div class="name-field">
-          <label>第一个人的昵称</label>
-          <input type="text" class="name-input a" id="name-a" placeholder="比如：小明" maxlength="20" oninput="updateNames()">
-        </div>
-        <div class="name-field">
-          <label>第二个人的昵称</label>
-          <input type="text" class="name-input b" id="name-b" placeholder="比如：小红" maxlength="20" oninput="updateNames()">
-        </div>
+  <!-- Phase 1: Entry -->
+  <div id="phase-entry">
+    <div class="entry-card">
+      <div class="entry-title">创建新房间</div>
+      <div class="entry-desc">创建一个房间，把房间码发给对方。</div>
+      <div class="field">
+        <label>你的昵称</label>
+        <input type="text" id="create-name" placeholder="输入你的昵称" maxlength="20">
       </div>
-      <p class="name-hint">昵称仅用于区分双方，不会影响分析结果。</p>
+      <button class="btn btn-primary" id="btn-create" onclick="createRoom()">创建房间</button>
     </div>
 
-    <div class="tabs">
-      <button class="tab active-a" id="tab-a" onclick="switchTab('a')"><span id="tab-a-text">A 的视角</span></button>
-      <button class="tab" id="tab-b" onclick="switchTab('b')"><span id="tab-b-text">B 的视角</span></button>
+    <div class="or-divider">或</div>
+
+    <div class="entry-card">
+      <div class="entry-title">加入房间</div>
+      <div class="entry-desc">输入对方发给你的房间码。</div>
+      <div class="field">
+        <label>房间码</label>
+        <input type="text" id="join-code" placeholder="输入4位房间码" maxlength="4" style="text-transform:uppercase;letter-spacing:4px;font-family:'SF Mono','Menlo',monospace;">
+      </div>
+      <div class="field">
+        <label>你的昵称</label>
+        <input type="text" id="join-name" placeholder="输入你的昵称" maxlength="20">
+      </div>
+      <button class="btn btn-primary" id="btn-join" onclick="joinRoom()">加入</button>
     </div>
-    <div class="input-area visible" id="area-a">
-      <p class="input-label" id="label-a">A，说说这件事对你来说是什么感受？发生了什么？</p>
-      <textarea id="input-a" placeholder="写下你想说的……" maxlength="500" oninput="updateState()"></textarea>
-      <div class="char-count" id="count-a">0 / 500</div>
-    </div>
-    <div class="input-area" id="area-b">
-      <p class="input-label" id="label-b">B，说说这件事对你来说是什么感受？发生了什么？</p>
-      <textarea id="input-b" placeholder="写下你想说的……" maxlength="500" oninput="updateState()"></textarea>
-      <div class="char-count" id="count-b">0 / 500</div>
-    </div>
-    <div class="status-row">
-      <div class="pill" id="pill-a">A 还未填写</div>
-      <div class="pill" id="pill-b">B 还未填写</div>
-    </div>
-    <button class="btn-main" id="btn-submit" onclick="analyze()">两人都填好了，开始分析</button>
-    <button class="btn-clear" onclick="clearAll()">清空重来</button>
+
+    <div id="entry-error" class="hidden" style="margin-top:12px;"></div>
   </div>
 
-  <div id="phase-result" style="display:none;">
-    <div class="results" id="results"></div>
-    <div class="divider"></div>
-    <p class="section-label">追问</p>
-    <div class="ftabs">
-      <button class="ftab active-a" id="ftab-a" onclick="switchFtab('a')"><span id="ftab-a-text">A 追问</span></button>
-      <button class="ftab" id="ftab-b" onclick="switchFtab('b')"><span id="ftab-b-text">B 追问</span></button>
+  <!-- Phase 2: Room (input + waiting + results + followup) -->
+  <div id="phase-room" class="hidden">
+
+    <!-- Room code display -->
+    <div id="room-code-section" class="hidden">
+      <div class="code-display">
+        <div class="code-value" id="display-code"></div>
+        <div class="code-hint">把这个房间码发给对方</div>
+        <button class="btn-copy" onclick="copyCode()">复制房间码</button>
+      </div>
+      <div class="divider"></div>
     </div>
-    <div class="farea visible" id="farea-a">
-      <textarea id="finput-a" placeholder="我想进一步说明……" maxlength="300" oninput="updateF()"></textarea>
-      <div class="fchar-count" id="fcount-a">0 / 300</div>
+
+    <!-- Status bar -->
+    <div id="status-bar" class="status-bar status-waiting"></div>
+
+    <!-- Input section -->
+    <div id="input-section">
+      <p class="input-label" id="input-label">说说这件事对你来说是什么感受？发生了什么？</p>
+      <textarea id="my-input" placeholder="写下你想说的……" maxlength="500" oninput="updateInputCount()"></textarea>
+      <div class="char-count" id="input-count">0 / 500</div>
+      <button class="btn btn-primary" id="btn-submit" onclick="submitInput()" disabled>提交</button>
     </div>
-    <div class="farea" id="farea-b">
-      <textarea id="finput-b" placeholder="我想进一步说明……" maxlength="300" oninput="updateF()"></textarea>
-      <div class="fchar-count" id="fcount-b">0 / 300</div>
+
+    <!-- Waiting for analysis -->
+    <div id="waiting-section" class="hidden">
+      <div class="card">
+        <div class="card-header neutral">等待中</div>
+        <div class="card-body" id="waiting-text">等待对方提交……</div>
+      </div>
     </div>
-    <button class="btn-followup" id="btn-f" onclick="followup()">提交追问</button>
-    <div id="fhistory"></div>
-    <div class="divider"></div>
-    <button class="btn-clear" onclick="clearAll()">清空重来</button>
+
+    <!-- Analyzing -->
+    <div id="analyzing-section" class="hidden">
+      <div class="card">
+        <div class="card-header neutral">AI 正在分析</div>
+        <div class="card-body"><div class="dots"><span></span><span></span><span></span></div></div>
+      </div>
+    </div>
+
+    <!-- Results -->
+    <div id="result-section" class="hidden">
+      <div class="card">
+        <div class="card-header mine" id="result-header"></div>
+        <div class="card-body" id="result-body"></div>
+      </div>
+
+      <div class="card" id="both-card">
+        <div class="card-header both">关于这件事</div>
+        <div class="card-body" id="both-body"></div>
+        <div class="consent-row" id="consent-row">
+          <span class="consent-status" id="consent-status"></span>
+          <button class="consent-btn" id="btn-consent" onclick="giveConsent()">我同意公开</button>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+      <p class="section-label">追问</p>
+      <textarea id="followup-input" placeholder="我想进一步说明……" maxlength="300" oninput="updateFollowupCount()"></textarea>
+      <div class="fchar-count" id="followup-count">0 / 300</div>
+      <button class="btn-followup" id="btn-followup" onclick="submitFollowup()" disabled>提交追问</button>
+      <div id="followup-history"></div>
+    </div>
   </div>
 </div>
 
@@ -155,252 +194,392 @@ function esc(str) {
   return d.innerHTML;
 }
 
+// Session state
 let S = {
-  inputA: '', inputB: '',
-  forA: '', forB: '', forBoth: '',
-  consentA: false, consentB: false,
-  ftab: 'a',
-  historyA: [], historyB: [],       // separate history per party
-  feelingSummaryA: '', feelingSummaryB: '',  // evolving feeling summaries
-  nameA: '', nameB: ''
+  code: null,
+  token: null,
+  role: null,
+  myName: null,
+  otherName: null,
+  submitted: false,
+  myConsent: false,
 };
 
-function getNameA() { return S.nameA || 'A'; }
-function getNameB() { return S.nameB || 'B'; }
+let pollTimer = null;
 
-function updateNames() {
-  S.nameA = document.getElementById('name-a').value.trim();
-  S.nameB = document.getElementById('name-b').value.trim();
-  const nA = getNameA();
-  const nB = getNameB();
-  document.getElementById('tab-a-text').textContent = nA + ' 的视角';
-  document.getElementById('tab-b-text').textContent = nB + ' 的视角';
-  document.getElementById('label-a').textContent = nA + '，说说这件事对你来说是什么感受？发生了什么？';
-  document.getElementById('label-b').textContent = nB + '，说说这件事对你来说是什么感受？发生了什么？';
-  document.getElementById('ftab-a-text').textContent = nA + ' 追问';
-  document.getElementById('ftab-b-text').textContent = nB + ' 追问';
-  updateState();
+// ─── Entry: Create Room ───
+async function createRoom() {
+  const name = document.getElementById('create-name').value.trim();
+  if (!name) return showEntryError('请输入昵称');
+  clearEntryError();
+
+  try {
+    const r = await fetch('/api/room/create', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name })
+    });
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.error);
+
+    S.code = data.code;
+    S.token = data.token;
+    S.role = 'a';
+    S.myName = name;
+    saveSession();
+    enterRoom(true);
+  } catch (e) {
+    showEntryError(e.message);
+  }
 }
 
-function switchTab(t) {
-  ['a','b'].forEach(x => {
-    document.getElementById('area-'+x).classList.toggle('visible', x===t);
-    document.getElementById('tab-'+x).className = 'tab' + (x===t ? ' active-'+x : '');
-  });
+// ─── Entry: Join Room ───
+async function joinRoom() {
+  const code = document.getElementById('join-code').value.trim().toUpperCase();
+  const name = document.getElementById('join-name').value.trim();
+  if (!code) return showEntryError('请输入房间码');
+  if (!name) return showEntryError('请输入昵称');
+  clearEntryError();
+
+  try {
+    const r = await fetch('/api/room/join', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code, name })
+    });
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.error);
+
+    S.code = data.code;
+    S.token = data.token;
+    S.role = 'b';
+    S.myName = name;
+    S.otherName = data.nameA;
+    saveSession();
+    enterRoom(false);
+  } catch (e) {
+    showEntryError(e.message);
+  }
 }
 
-function updateState() {
-  const a = document.getElementById('input-a').value;
-  const b = document.getElementById('input-b').value;
-  const nA = getNameA();
-  const nB = getNameB();
-  const ca = document.getElementById('count-a');
-  const cb = document.getElementById('count-b');
-  ca.textContent = a.length + ' / 500';
-  cb.textContent = b.length + ' / 500';
-  ca.className = 'char-count' + (a.length > 450 ? ' warning' : '');
-  cb.className = 'char-count' + (b.length > 450 ? ' warning' : '');
-  const at = a.trim(); const bt = b.trim();
-  document.getElementById('pill-a').textContent = at ? nA + ' 已填写' : nA + ' 还未填写';
-  document.getElementById('pill-a').className = 'pill' + (at ? ' a' : '');
-  document.getElementById('pill-b').textContent = bt ? nB + ' 已填写' : nB + ' 还未填写';
-  document.getElementById('pill-b').className = 'pill' + (bt ? ' b' : '');
-  document.getElementById('btn-submit').className = 'btn-main' + (at && bt ? ' ready' : '');
+// ─── Enter Room UI ───
+function enterRoom(isCreator) {
+  document.getElementById('phase-entry').classList.add('hidden');
+  document.getElementById('phase-room').classList.remove('hidden');
+
+  // Show room code for creator
+  if (isCreator) {
+    document.getElementById('room-code-section').classList.remove('hidden');
+    document.getElementById('display-code').textContent = S.code;
+  }
+
+  // Set up input label
+  document.getElementById('input-label').textContent = S.myName + '，说说这件事对你来说是什么感受？发生了什么？';
+  updateStatusBar();
+  startPolling();
 }
 
-function switchFtab(t) {
-  S.ftab = t;
-  ['a','b'].forEach(x => {
-    document.getElementById('farea-'+x).classList.toggle('visible', x===t);
-    document.getElementById('ftab-'+x).className = 'ftab' + (x===t ? ' active-'+x : '');
-  });
-  updateF();
+// ─── Submit Input ───
+async function submitInput() {
+  const input = document.getElementById('my-input').value.trim();
+  if (!input) return;
+
+  document.getElementById('btn-submit').disabled = true;
+  document.getElementById('btn-submit').textContent = '提交中…';
+
+  try {
+    const r = await fetch('/api/room/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code: S.code, token: S.token, input })
+    });
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.error);
+
+    S.submitted = true;
+    saveSession();
+
+    if (data.status === 'analyzed') {
+      // This was the second submission, analysis done
+      await fetchAndShowResults();
+    } else {
+      // Waiting for other party
+      document.getElementById('input-section').classList.add('hidden');
+      document.getElementById('waiting-section').classList.remove('hidden');
+      document.getElementById('waiting-text').textContent = S.otherName ? '等待 ' + S.otherName + ' 提交……' : '等待对方提交……';
+    }
+  } catch (e) {
+    document.getElementById('btn-submit').disabled = false;
+    document.getElementById('btn-submit').textContent = '提交';
+    showEntryError(e.message);
+  }
 }
 
-function updateF() {
-  const v = document.getElementById('finput-'+S.ftab).value;
-  const fc = document.getElementById('fcount-'+S.ftab);
+// ─── Polling ───
+function startPolling() {
+  if (pollTimer) clearInterval(pollTimer);
+  pollTimer = setInterval(pollStatus, 3000);
+}
+
+async function pollStatus() {
+  if (!S.code || !S.token) return;
+
+  try {
+    const r = await fetch(`/api/room/status?code=${S.code}&token=${S.token}`);
+    if (!r.ok) return;
+    const data = await r.json();
+
+    // Update other's name
+    if (data.otherName && !S.otherName) {
+      S.otherName = data.otherName;
+      saveSession();
+      updateStatusBar();
+    }
+
+    // Check if analysis is done
+    if (data.status === 'analyzed' && !document.getElementById('result-section').classList.contains('hidden') === false) {
+      // Results not yet shown
+      if (data.status === 'analyzed') {
+        await fetchAndShowResults();
+      }
+    }
+
+    // Check analyzing state
+    if (data.status === 'analyzing' && S.submitted) {
+      document.getElementById('waiting-section').classList.add('hidden');
+      document.getElementById('analyzing-section').classList.remove('hidden');
+    }
+
+    // Check consent updates
+    if (data.status === 'analyzed') {
+      updateConsent(data.consentA, data.consentB, data.forBoth);
+    }
+
+    updateStatusBar(data);
+  } catch (e) {
+    // silent
+  }
+}
+
+async function fetchAndShowResults() {
+  try {
+    const r = await fetch(`/api/room/status?code=${S.code}&token=${S.token}`);
+    const data = await r.json();
+    if (data.status !== 'analyzed') return;
+
+    if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
+
+    // Hide other sections
+    document.getElementById('input-section').classList.add('hidden');
+    document.getElementById('waiting-section').classList.add('hidden');
+    document.getElementById('analyzing-section').classList.add('hidden');
+    document.getElementById('room-code-section').classList.add('hidden');
+    document.getElementById('status-bar').classList.add('hidden');
+
+    // Show results
+    const rs = document.getElementById('result-section');
+    rs.classList.remove('hidden');
+    document.getElementById('result-header').textContent = S.myName + '，我想告诉你';
+    document.getElementById('result-body').textContent = data.myAnalysis;
+
+    updateConsent(data.consentA, data.consentB, data.forBoth);
+
+    // Show history if any
+    if (data.myHistory && data.myHistory.length > 0) {
+      renderHistory(data.myHistory);
+    }
+
+    // Restart polling (slower) for consent updates
+    pollTimer = setInterval(pollStatus, 5000);
+  } catch (e) {
+    // silent
+  }
+}
+
+// ─── Consent ───
+function updateConsent(consentA, consentB, forBoth) {
+  const myConsent = S.role === 'a' ? consentA : consentB;
+  const otherConsent = S.role === 'a' ? consentB : consentA;
+  S.myConsent = myConsent;
+
+  const btn = document.getElementById('btn-consent');
+  const statusEl = document.getElementById('consent-status');
+  const bodyEl = document.getElementById('both-body');
+
+  if (myConsent && otherConsent && forBoth) {
+    bodyEl.textContent = forBoth;
+    bodyEl.className = 'card-body';
+    document.getElementById('consent-row').classList.add('hidden');
+  } else if (myConsent) {
+    bodyEl.textContent = '双方同意分享后显示……';
+    bodyEl.className = 'card-body locked';
+    btn.textContent = '已同意';
+    btn.className = 'consent-btn done';
+    statusEl.textContent = '等待' + (S.otherName || '对方') + '同意';
+  } else if (otherConsent) {
+    bodyEl.textContent = '双方同意分享后显示……';
+    bodyEl.className = 'card-body locked';
+    statusEl.textContent = (S.otherName || '对方') + '已同意，等待你';
+  } else {
+    bodyEl.textContent = '双方同意分享后显示……';
+    bodyEl.className = 'card-body locked';
+    statusEl.textContent = '双方都同意后，将显示共同总结';
+  }
+}
+
+async function giveConsent() {
+  try {
+    const r = await fetch('/api/room/consent', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code: S.code, token: S.token })
+    });
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.error);
+    updateConsent(data.consentA, data.consentB, data.forBoth);
+  } catch (e) {
+    // silent
+  }
+}
+
+// ─── Follow-up ───
+function updateFollowupCount() {
+  const v = document.getElementById('followup-input').value;
+  const fc = document.getElementById('followup-count');
   fc.textContent = v.length + ' / 300';
   fc.className = 'fchar-count' + (v.length > 250 ? ' warning' : '');
-  document.getElementById('btn-f').className = 'btn-followup' + (v.trim() ? ' ready' : '');
+  document.getElementById('btn-followup').disabled = !v.trim();
 }
 
-function clearAll() {
-  S = {
-    inputA: '', inputB: '',
-    forA: '', forB: '', forBoth: '',
-    consentA: false, consentB: false,
-    ftab: 'a',
-    historyA: [], historyB: [],
-    feelingSummaryA: '', feelingSummaryB: '',
-    nameA: '', nameB: ''
-  };
-  document.getElementById('input-a').value = '';
-  document.getElementById('input-b').value = '';
-  document.getElementById('name-a').value = '';
-  document.getElementById('name-b').value = '';
-  document.getElementById('phase-input').style.display = 'block';
-  document.getElementById('phase-result').style.display = 'none';
-  updateNames();
-  updateState();
+async function submitFollowup() {
+  const q = document.getElementById('followup-input').value.trim();
+  if (!q) return;
+
+  document.getElementById('btn-followup').disabled = true;
+  const fh = document.getElementById('followup-history');
+  const tmp = document.createElement('div');
+  tmp.className = 'fitem';
+  tmp.innerHTML = `<div class="fitem-who">你的追问</div><div class="fitem-q">${esc(q)}</div><div class="fitem-ans"><div class="dots"><span></span><span></span><span></span></div></div>`;
+  fh.appendChild(tmp);
+
+  try {
+    const r = await fetch('/api/room/followup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code: S.code, token: S.token, question: q })
+    });
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.error);
+
+    tmp.querySelector('.fitem-ans').textContent = data.answer;
+    document.getElementById('followup-input').value = '';
+    updateFollowupCount();
+  } catch (e) {
+    tmp.querySelector('.fitem-ans').textContent = '出错了：' + e.message;
+  }
+  document.getElementById('btn-followup').disabled = !document.getElementById('followup-input').value.trim();
 }
 
-function showError(container, msg) {
-  container.innerHTML = `
-    <div class="error-card">
-      <div class="error-title">出现了一些问题</div>
-      <div class="error-msg">${esc(msg)}</div>
-      <button class="btn-clear" style="width:auto;padding:8px 16px;margin-top:0;" onclick="clearAll()">重新开始</button>
-    </div>`;
-}
-
-function renderResults() {
-  const nA = getNameA();
-  const nB = getNameB();
-  const unlocked = S.consentA && S.consentB;
-  let status = !S.consentA && !S.consentB ? '双方都同意后，将显示共同总结'
-    : S.consentA ? nA + ' 已同意，等待 ' + nB : nB + ' 已同意，等待 ' + nA;
-  if (unlocked) status = '双方已同意';
-
-  document.getElementById('results').innerHTML = `
-    <div class="card">
-      <div class="card-header a">${esc(nA)}，我想告诉你</div>
-      <div class="card-body">${esc(S.forA)}</div>
-    </div>
-    <div class="card">
-      <div class="card-header b">${esc(nB)}，我想告诉你</div>
-      <div class="card-body">${esc(S.forB)}</div>
-    </div>
-    <div class="card">
-      <div class="card-header both">关于这件事</div>
-      ${unlocked ? `<div class="card-body">${esc(S.forBoth)}</div>` : `<div class="card-body locked">双方同意分享后显示……</div>`}
-      <div class="consent-row">
-        <span class="consent-status">${esc(status)}</span>
-        <button class="consent-btn ${S.consentA?'done-a':''}" onclick="agree('a')">${S.consentA ? esc(nA)+' 已同意' : esc(nA)+' 同意'}</button>
-        <button class="consent-btn ${S.consentB?'done-b':''}" onclick="agree('b')">${S.consentB ? esc(nB)+' 已同意' : esc(nB)+' 同意'}</button>
-      </div>
-    </div>`;
-}
-
-function agree(who) {
-  if (who==='a') S.consentA = true;
-  else S.consentB = true;
-  renderResults();
-}
-
-function renderHistory() {
-  const nA = getNameA();
-  const nB = getNameB();
-  // Merge and display all history in chronological order
-  const all = [
-    ...S.historyA.map(h => ({ ...h, who: 'a' })),
-    ...S.historyB.map(h => ({ ...h, who: 'b' }))
-  ].sort((a, b) => a.ts - b.ts);
-
-  document.getElementById('fhistory').innerHTML = all.map(h => `
+function renderHistory(history) {
+  const fh = document.getElementById('followup-history');
+  fh.innerHTML = history.map(h => `
     <div class="fitem">
-      <div class="fitem-who ${h.who}">${esc(h.who === 'a' ? nA : nB)} 的追问</div>
+      <div class="fitem-who">你的追问</div>
       <div class="fitem-q">${esc(h.question)}</div>
       <div class="fitem-ans">${esc(h.answer)}</div>
     </div>`).join('');
 }
 
-async function analyze() {
-  const a = document.getElementById('input-a').value.trim();
-  const b = document.getElementById('input-b').value.trim();
-  if (!a || !b) return;
-  S.inputA = a; S.inputB = b;
-  const nA = getNameA();
-  const nB = getNameB();
-
-  document.getElementById('btn-submit').className = 'btn-main loading';
-  document.getElementById('btn-submit').textContent = '分析中…';
-  document.getElementById('phase-input').style.display = 'none';
-  document.getElementById('phase-result').style.display = 'block';
-  const rs = document.getElementById('results');
-  rs.innerHTML = `<div class="card"><div class="card-header neutral">AI 正在分析</div><div class="card-body"><div class="dots"><span></span><span></span><span></span></div></div></div>`;
-
-  try {
-    const r = await fetch('/api/analyze', {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({ inputA: a, inputB: b, nameA: nA, nameB: nB })
-    });
-    if (!r.ok) throw new Error('服务器响应异常（' + r.status + '）');
-    const data = await r.json();
-    if (data.error) throw new Error(data.error);
-    S.forA = data.forA;
-    S.forB = data.forB;
-    S.forBoth = data.forBoth;
-    S.feelingSummaryA = data.feelingSummaryA;
-    S.feelingSummaryB = data.feelingSummaryB;
-    renderResults();
-  } catch(e) {
-    showError(rs, '分析时遇到了问题：' + e.message + '。请稍等片刻后重新开始。');
+// ─── UI Helpers ───
+function updateStatusBar(data) {
+  const bar = document.getElementById('status-bar');
+  if (!S.otherName) {
+    bar.className = 'status-bar status-waiting';
+    bar.textContent = '等待对方加入……';
+  } else if (!S.submitted) {
+    bar.className = 'status-bar status-ok';
+    bar.textContent = S.otherName + ' 已加入';
+  } else if (data && data.status === 'analyzing') {
+    bar.className = 'status-bar status-analyzing';
+    bar.textContent = 'AI 正在分析……';
+  } else if (data && data.status === 'analyzed') {
+    bar.className = 'status-bar status-ok';
+    bar.textContent = '分析完成';
+  } else {
+    bar.className = 'status-bar status-waiting';
+    bar.textContent = '等待' + (S.otherName || '对方') + '提交……';
   }
 
-  document.getElementById('btn-submit').textContent = '两人都填好了，开始分析';
+  // Enable submit button
+  updateInputCount();
 }
 
-async function followup() {
-  const who = S.ftab;
-  const q = document.getElementById('finput-'+who).value.trim();
-  if (!q) return;
-  const nA = getNameA();
-  const nB = getNameB();
-  const currentName = who === 'a' ? nA : nB;
+function updateInputCount() {
+  const v = document.getElementById('my-input').value;
+  const c = document.getElementById('input-count');
+  c.textContent = v.length + ' / 500';
+  c.className = 'char-count' + (v.length > 450 ? ' warning' : '');
+  document.getElementById('btn-submit').disabled = !v.trim() || S.submitted;
+}
 
-  // Determine own history and summaries
-  const ownHistory = who === 'a' ? S.historyA : S.historyB;
-  const ownFeelingSummary = who === 'a' ? S.feelingSummaryA : S.feelingSummaryB;
-  const otherFeelingSummary = who === 'a' ? S.feelingSummaryB : S.feelingSummaryA;
+function showEntryError(msg) {
+  const el = document.getElementById('entry-error');
+  el.classList.remove('hidden');
+  el.innerHTML = `<div class="error-card"><div class="error-title">出了点问题</div><div class="error-msg">${esc(msg)}</div></div>`;
+}
 
-  document.getElementById('btn-f').className = 'btn-followup';
-  const fh = document.getElementById('fhistory');
-  const tmp = document.createElement('div');
-  tmp.className = 'fitem';
-  tmp.innerHTML = `<div class="fitem-who ${who}">${esc(currentName)} 的追问</div><div class="fitem-q">${esc(q)}</div><div class="fitem-ans"><div class="dots"><span></span><span></span><span></span></div></div>`;
-  fh.appendChild(tmp);
+function clearEntryError() {
+  document.getElementById('entry-error').classList.add('hidden');
+}
 
-  try {
-    const r = await fetch('/api/followup', {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({
-        who,
-        question: q,
-        inputA: S.inputA,
-        inputB: S.inputB,
-        ownHistory,
-        ownFeelingSummary,
-        otherFeelingSummary,
-        nameA: nA,
-        nameB: nB
-      })
-    });
-    if (!r.ok) throw new Error('服务器响应异常（' + r.status + '）');
-    const data = await r.json();
-    if (data.error) throw new Error(data.error);
+function copyCode() {
+  navigator.clipboard.writeText(S.code).then(() => {
+    const btn = document.querySelector('.btn-copy');
+    btn.textContent = '已复制';
+    setTimeout(() => btn.textContent = '复制房间码', 2000);
+  });
+}
 
-    // Store in the correct party's history
-    const entry = { question: q, answer: data.answer, ts: Date.now() };
-    if (who === 'a') {
-      S.historyA.push(entry);
-      S.feelingSummaryA = data.updatedFeelingSummary;
-    } else {
-      S.historyB.push(entry);
-      S.feelingSummaryB = data.updatedFeelingSummary;
+// ─── Session persistence (survives page refresh within same tab) ───
+function saveSession() {
+  sessionStorage.setItem('mediator_session', JSON.stringify(S));
+}
+
+function loadSession() {
+  const saved = sessionStorage.getItem('mediator_session');
+  if (saved) {
+    try { S = JSON.parse(saved); } catch (e) { return false; }
+    return S.code && S.token;
+  }
+  return false;
+}
+
+// ─── Init: check for existing session ───
+(function init() {
+  if (loadSession()) {
+    // Resume existing session
+    document.getElementById('phase-entry').classList.add('hidden');
+    document.getElementById('phase-room').classList.remove('hidden');
+
+    if (S.role === 'a' && !S.otherName) {
+      document.getElementById('room-code-section').classList.remove('hidden');
+      document.getElementById('display-code').textContent = S.code;
     }
 
-    document.getElementById('finput-'+who).value = '';
-    updateF();
-    renderHistory();
-  } catch(e) {
-    tmp.querySelector('.fitem-ans').textContent = '出错了：' + e.message + '，请再试一次。';
-  }
+    document.getElementById('input-label').textContent = S.myName + '，说说这件事对你来说是什么感受？发生了什么？';
 
-  document.getElementById('btn-f').className = 'btn-followup' + (document.getElementById('finput-'+who).value.trim() ? ' ready' : '');
-}
+    if (S.submitted) {
+      document.getElementById('input-section').classList.add('hidden');
+      document.getElementById('waiting-section').classList.remove('hidden');
+      // Poll will handle showing results
+    }
+
+    updateStatusBar();
+    startPolling();
+    // Immediately check status
+    pollStatus();
+  }
+})();
 </script>
 </body>
 </html>
