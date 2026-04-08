@@ -19,6 +19,8 @@ h1 { font-size: 22px; font-weight: 500; margin-bottom: 4px; }
 .input-label { font-size: 13px; color: #888; margin-bottom: 6px; }
 textarea { width: 100%; min-height: 130px; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 15px; font-family: inherit; resize: vertical; line-height: 1.6; background: white; }
 textarea:focus { outline: none; border-color: #aaa; }
+.char-count { text-align: right; font-size: 12px; color: #bbb; margin-top: 4px; }
+.char-count.warning { color: #e07000; }
 .status-row { display: flex; gap: 8px; margin: 1rem 0; }
 .pill { flex: 1; padding: 8px; border-radius: 8px; font-size: 13px; text-align: center; border: 1px solid #ddd; background: #fafafa; color: #aaa; }
 .pill.a { background: #E1F5EE; border-color: #1D9E75; color: #0F6E56; }
@@ -36,6 +38,9 @@ textarea:focus { outline: none; border-color: #aaa; }
 .card-header.neutral { background: #f5f5f5; color: #666; }
 .card-body { padding: 14px; font-size: 15px; line-height: 1.75; color: #222; white-space: pre-wrap; }
 .card-body.locked { color: #bbb; font-size: 14px; }
+.error-card { border: 1px solid #f0c0c0; border-radius: 12px; background: #fff8f8; padding: 16px; margin-bottom: 12px; }
+.error-title { font-size: 14px; font-weight: 500; color: #c00; margin-bottom: 8px; }
+.error-msg { font-size: 14px; color: #666; line-height: 1.6; margin-bottom: 12px; }
 .consent-row { display: flex; gap: 8px; padding: 10px 14px; border-top: 1px solid #eee; background: #fafafa; align-items: center; }
 .consent-status { font-size: 13px; color: #888; flex: 1; }
 .consent-btn { padding: 6px 12px; border-radius: 8px; font-size: 13px; cursor: pointer; border: 1px solid #ddd; background: white; }
@@ -49,6 +54,8 @@ textarea:focus { outline: none; border-color: #aaa; }
 .ftab.active-b { background: #E6F1FB; border-color: #378ADD; color: #185FA5; }
 .farea { display: none; }
 .farea.visible { display: block; }
+.fchar-count { text-align: right; font-size: 12px; color: #bbb; margin-top: 4px; }
+.fchar-count.warning { color: #e07000; }
 .btn-followup { margin-top: 8px; padding: 10px 16px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; border: none; background: #222; color: white; opacity: 0.35; pointer-events: none; }
 .btn-followup.ready { opacity: 1; pointer-events: auto; }
 .fitem { border: 1px solid #e0e0e0; border-radius: 12px; overflow: hidden; margin-top: 10px; }
@@ -76,11 +83,13 @@ textarea:focus { outline: none; border-color: #aaa; }
     </div>
     <div class="input-area visible" id="area-a">
       <p class="input-label">A，说说这件事对你来说是什么感受？发生了什么？</p>
-      <textarea id="input-a" placeholder="写下你想说的……" oninput="updateState()"></textarea>
+      <textarea id="input-a" placeholder="写下你想说的……" maxlength="500" oninput="updateState()"></textarea>
+      <div class="char-count" id="count-a">0 / 500</div>
     </div>
     <div class="input-area" id="area-b">
       <p class="input-label">B，说说这件事对你来说是什么感受？发生了什么？</p>
-      <textarea id="input-b" placeholder="写下你想说的……" oninput="updateState()"></textarea>
+      <textarea id="input-b" placeholder="写下你想说的……" maxlength="500" oninput="updateState()"></textarea>
+      <div class="char-count" id="count-b">0 / 500</div>
     </div>
     <div class="status-row">
       <div class="pill" id="pill-a">A 还未填写</div>
@@ -99,10 +108,12 @@ textarea:focus { outline: none; border-color: #aaa; }
       <button class="ftab" id="ftab-b" onclick="switchFtab('b')">B 追问</button>
     </div>
     <div class="farea visible" id="farea-a">
-      <textarea id="finput-a" placeholder="A：我想进一步说明……" oninput="updateF()"></textarea>
+      <textarea id="finput-a" placeholder="A：我想进一步说明……" maxlength="300" oninput="updateF()"></textarea>
+      <div class="fchar-count" id="fcount-a">0 / 300</div>
     </div>
     <div class="farea" id="farea-b">
-      <textarea id="finput-b" placeholder="B：我想进一步说明……" oninput="updateF()"></textarea>
+      <textarea id="finput-b" placeholder="B：我想进一步说明……" maxlength="300" oninput="updateF()"></textarea>
+      <div class="fchar-count" id="fcount-b">0 / 300</div>
     </div>
     <button class="btn-followup" id="btn-f" onclick="followup()">提交追问</button>
     <div id="fhistory"></div>
@@ -122,13 +133,20 @@ function switchTab(t) {
 }
 
 function updateState() {
-  const a = document.getElementById('input-a').value.trim();
-  const b = document.getElementById('input-b').value.trim();
-  document.getElementById('pill-a').textContent = a ? 'A 已填写' : 'A 还未填写';
-  document.getElementById('pill-a').className = 'pill' + (a ? ' a' : '');
-  document.getElementById('pill-b').textContent = b ? 'B 已填写' : 'B 还未填写';
-  document.getElementById('pill-b').className = 'pill' + (b ? ' b' : '');
-  document.getElementById('btn-submit').className = 'btn-main' + (a && b ? ' ready' : '');
+  const a = document.getElementById('input-a').value;
+  const b = document.getElementById('input-b').value;
+  const ca = document.getElementById('count-a');
+  const cb = document.getElementById('count-b');
+  ca.textContent = a.length + ' / 500';
+  cb.textContent = b.length + ' / 500';
+  ca.className = 'char-count' + (a.length > 450 ? ' warning' : '');
+  cb.className = 'char-count' + (b.length > 450 ? ' warning' : '');
+  const at = a.trim(); const bt = b.trim();
+  document.getElementById('pill-a').textContent = at ? 'A 已填写' : 'A 还未填写';
+  document.getElementById('pill-a').className = 'pill' + (at ? ' a' : '');
+  document.getElementById('pill-b').textContent = bt ? 'B 已填写' : 'B 还未填写';
+  document.getElementById('pill-b').className = 'pill' + (bt ? ' b' : '');
+  document.getElementById('btn-submit').className = 'btn-main' + (at && bt ? ' ready' : '');
 }
 
 function switchFtab(t) {
@@ -141,8 +159,11 @@ function switchFtab(t) {
 }
 
 function updateF() {
-  const v = document.getElementById('finput-'+S.ftab).value.trim();
-  document.getElementById('btn-f').className = 'btn-followup' + (v ? ' ready' : '');
+  const v = document.getElementById('finput-'+S.ftab).value;
+  const fc = document.getElementById('fcount-'+S.ftab);
+  fc.textContent = v.length + ' / 300';
+  fc.className = 'fchar-count' + (v.length > 250 ? ' warning' : '');
+  document.getElementById('btn-f').className = 'btn-followup' + (v.trim() ? ' ready' : '');
 }
 
 function clearAll() {
@@ -152,6 +173,15 @@ function clearAll() {
   document.getElementById('phase-input').style.display = 'block';
   document.getElementById('phase-result').style.display = 'none';
   updateState();
+}
+
+function showError(container, msg) {
+  container.innerHTML = `
+    <div class="error-card">
+      <div class="error-title">出现了一些问题</div>
+      <div class="error-msg">${msg}</div>
+      <button class="btn-clear" style="width:auto;padding:8px 16px;margin-top:0;" onclick="clearAll()">重新开始</button>
+    </div>`;
 }
 
 function renderResults() {
@@ -205,7 +235,8 @@ async function analyze() {
   document.getElementById('btn-submit').textContent = '分析中…';
   document.getElementById('phase-input').style.display = 'none';
   document.getElementById('phase-result').style.display = 'block';
-  document.getElementById('results').innerHTML = `<div class="card"><div class="card-header neutral">AI 正在分析</div><div class="card-body"><div class="dots"><span></span><span></span><span></span></div></div></div>`;
+  const rs = document.getElementById('results');
+  rs.innerHTML = `<div class="card"><div class="card-header neutral">AI 正在分析</div><div class="card-body"><div class="dots"><span></span><span></span><span></span></div></div></div>`;
 
   try {
     const r = await fetch('/api/analyze', {
@@ -213,12 +244,16 @@ async function analyze() {
       headers: {'Content-Type':'application/json'},
       body: JSON.stringify({ inputA: a, inputB: b })
     });
+    if (!r.ok) throw new Error('服务器响应异常（' + r.status + '）');
     const data = await r.json();
+    if (data.error) throw new Error(data.error);
     S.forA = data.forA; S.forB = data.forB; S.forBoth = data.forBoth;
     renderResults();
   } catch(e) {
-    document.getElementById('results').innerHTML = `<div class="card"><div class="card-body" style="color:#c00;">出错了，请刷新页面重试。</div></div>`;
+    showError(rs, '分析时遇到了问题：' + e.message + '。请稍等片刻后重新开始。');
   }
+
+  document.getElementById('btn-submit').textContent = '两人都填好了，开始分析';
 }
 
 async function followup() {
@@ -239,14 +274,18 @@ async function followup() {
       headers: {'Content-Type':'application/json'},
       body: JSON.stringify({ who, question: q, inputA: S.inputA, inputB: S.inputB, summaryA: S.forA, summaryB: S.forB, history: S.history })
     });
+    if (!r.ok) throw new Error('服务器响应异常（' + r.status + '）');
     const data = await r.json();
+    if (data.error) throw new Error(data.error);
     S.history.push({ who, question: q, answer: data.answer });
     document.getElementById('finput-'+who).value = '';
+    updateF();
     renderHistory();
   } catch(e) {
-    tmp.querySelector('.fitem-ans').textContent = '出错了，请再试一次。';
+    tmp.querySelector('.fitem-ans').textContent = '出错了：' + e.message + '，请再试一次。';
   }
-  updateF();
+
+  document.getElementById('btn-f').className = 'btn-followup' + (document.getElementById('finput-'+who).value.trim() ? ' ready' : '');
 }
 </script>
 </body>
