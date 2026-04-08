@@ -1,25 +1,306 @@
 const express = require('express');
 const Anthropic = require('@anthropic-ai/sdk');
+const { Redis } = require('@upstash/redis');
 const path = require('path');
+const crypto = require('crypto');
 
 const app = express();
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+const redis = new Redis({
+  url: process.env.KV_REST_API_URL,
+  token: process.env.KV_REST_API_TOKEN,
+});
 
 app.use(express.json());
 app.use(express.static('public'));
 
-app.post('/api/analyze', async (req, res) => {
-  const { inputA, inputB, nameA, nameB } = req.body;
-  if (!inputA || !inputB) return res.status(400).json({ error: 'missing input' });
+const ROOM_TTL = 86400; // 24 hours in seconds
 
-  const nA = nameA || 'A';
-  const nB = nameB || 'B';
+// Helper: generate random code/token
+function randomCode(len) {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // no ambiguous chars
+  let result = '';
+  const bytes = crypto.randomBytes(len);
+  for (let i = 0; i < len; i++) result += chars[bytes[i] % chars.length];
+  return result;
+}
+
+function randomToken() {
+  return crypto.randomBytes(24).toString('hex');
+}
+
+// Helper: get room from Redis
+async function getRoom(code) {
+  const room = await redis.get(`room:${code}`);
+  return room || null;
+}
+
+// Helper: save room to Redis with TTL
+async function saveRoom(code, room) {
+  await redis.set(`room:${code}`, room, { ex: ROOM_TTL });
+}
+
+// Helper: identify role from token
+function getRoleByToken(room, token) {
+  if (room.tokenA === token) return 'a';
+  if (room.tokenB === token) return 'b';
+  return null;
+}
+
+// ─── API: Create Room ───
+app.post('/api/room/create', async (req, res) => {
+  const { name } = req.body;
+  if (!name || !name.trim()) return res.status(400).json({ error: '请输入昵称' });
+
+  const code = randomCode(4);
+  const token = randomToken();
+
+  const room = {
+    code,
+    createdAt: Date.now(),
+    nameA: name.trim(),
+    nameB: null,
+    tokenA: token,
+    tokenB: null,
+    inputA: null,
+    inputB: null,
+    forA: null,
+    forB: null,
+    forBoth: null,
+    consentA: false,
+    consentB: false,
+    feelingSummaryA: null,
+    feelingSummaryB: null,
+    historyA: [],
+    historyB: [],
+    status: 'waiting',   // waiting | analyzed
+    analyzing: false,
+  };
+
+  await saveRoom(code, room);
+  res.json({ code, token, role: 'a' });
+});
+
+// ─── API: Join Room ───
+app.post('/api/room/join', async (req, res) => {
+  const { code, name } = req.body;
+  if (!code || !name || !name.trim()) return res.status(400).json({ error: '请输入房间码和昵称' });
+
+  const room = await getRoom(code.toUpperCase());
+  if (!room) return res.status(404).json({ error: '房间不存在或已过期' });
+  if (room.tokenB) return res.status(400).json({ error: '房间已满' });
+
+  const token = randomToken();
+  room.nameB = name.trim();
+  room.tokenB = token;
+  await saveRoom(room.code, room);
+
+  res.json({ code: room.code, token, role: 'b', nameA: room.nameA });
+});
+
+// ─── API: Submit Input ───
+app.post('/api/room/submit', async (req, res) => {
+  const { code, token, input } = req.body;
+  if (!code || !token || !input || !input.trim()) return res.status(400).json({ error: '缺少必要信息' });
+
+  const room = await getRoom(code);
+  if (!room) return res.status(404).json({ error: '房间不存在或已过期' });
+
+  const role = getRoleByToken(room, token);
+  if (!role) return res.status(403).json({ error: '身份验证失败' });
+
+  // Store input
+  if (role === 'a') room.inputA = input.trim();
+  else room.inputB = input.trim();
+
+  // Check if both submitted
+  if (room.inputA && room.inputB && !room.analyzing && room.status !== 'analyzed') {
+    // Try to acquire analysis lock atomically
+    // Use setnx: only one request can set this key
+    const lockKey = `lock:${code}`;
+    const acquired = await redis.setnx(lockKey, '1');
+    if (acquired) {
+      await redis.expire(lockKey, 120); // lock expires in 2 min max
+      room.analyzing = true;
+      await saveRoom(code, room);
+
+      try {
+        // Run analysis
+        const result = await runAnalysis(room);
+        room.forA = result.forA;
+        room.forB = result.forB;
+        room.forBoth = result.forBoth;
+        room.feelingSummaryA = result.feelingSummaryA;
+        room.feelingSummaryB = result.feelingSummaryB;
+        room.status = 'analyzed';
+        room.analyzing = false;
+        await saveRoom(code, room);
+        await redis.del(lockKey);
+        return res.json({ status: 'analyzed' });
+      } catch (e) {
+        room.analyzing = false;
+        await saveRoom(code, room);
+        await redis.del(lockKey);
+        return res.status(500).json({ error: '分析失败：' + e.message });
+      }
+    } else {
+      // Another request is already analyzing, just save and return
+      await saveRoom(code, room);
+      return res.json({ status: 'analyzing' });
+    }
+  }
+
+  await saveRoom(code, room);
+  res.json({ status: room.status === 'analyzed' ? 'analyzed' : 'waiting' });
+});
+
+// ─── API: Poll Status ───
+app.get('/api/room/status', async (req, res) => {
+  const { code, token } = req.query;
+  if (!code || !token) return res.status(400).json({ error: '缺少参数' });
+
+  const room = await getRoom(code);
+  if (!room) return res.status(404).json({ error: '房间不存在或已过期' });
+
+  const role = getRoleByToken(room, token);
+  if (!role) return res.status(403).json({ error: '身份验证失败' });
+
+  const otherJoined = !!room.tokenB;
+  const otherSubmitted = role === 'a' ? !!room.inputB : !!room.inputA;
+  const mySubmitted = role === 'a' ? !!room.inputA : !!room.inputB;
+
+  // Only return what this role is allowed to see
+  const result = {
+    status: room.analyzing ? 'analyzing' : room.status,
+    nameA: room.nameA,
+    nameB: room.nameB,
+    otherJoined,
+    mySubmitted,
+    otherSubmitted,
+    myName: role === 'a' ? room.nameA : room.nameB,
+    otherName: role === 'a' ? room.nameB : room.nameA,
+    consentA: room.consentA,
+    consentB: room.consentB,
+  };
+
+  if (room.status === 'analyzed') {
+    result.myAnalysis = role === 'a' ? room.forA : room.forB;
+    result.forBoth = (room.consentA && room.consentB) ? room.forBoth : null;
+    result.myHistory = role === 'a' ? room.historyA : room.historyB;
+  }
+
+  res.json(result);
+});
+
+// ─── API: Consent ───
+app.post('/api/room/consent', async (req, res) => {
+  const { code, token } = req.body;
+  const room = await getRoom(code);
+  if (!room) return res.status(404).json({ error: '房间不存在或已过期' });
+
+  const role = getRoleByToken(room, token);
+  if (!role) return res.status(403).json({ error: '身份验证失败' });
+
+  if (role === 'a') room.consentA = true;
+  else room.consentB = true;
+  await saveRoom(room.code, room);
+
+  res.json({ consentA: room.consentA, consentB: room.consentB, forBoth: (room.consentA && room.consentB) ? room.forBoth : null });
+});
+
+// ─── API: Follow-up ───
+app.post('/api/room/followup', async (req, res) => {
+  const { code, token, question } = req.body;
+  if (!question || !question.trim()) return res.status(400).json({ error: '请输入内容' });
+
+  const room = await getRoom(code);
+  if (!room) return res.status(404).json({ error: '房间不存在或已过期' });
+  if (room.status !== 'analyzed') return res.status(400).json({ error: '请等待分析完成' });
+
+  const role = getRoleByToken(room, token);
+  if (!role) return res.status(403).json({ error: '身份验证失败' });
+
+  const currentName = role === 'a' ? room.nameA : room.nameB;
+  const otherName = role === 'a' ? room.nameB : room.nameA;
+  const ownInput = role === 'a' ? room.inputA : room.inputB;
+  const ownHistory = role === 'a' ? room.historyA : room.historyB;
+  const ownFeelingSummary = role === 'a' ? room.feelingSummaryA : room.feelingSummaryB;
+  const otherFeelingSummary = role === 'a' ? room.feelingSummaryB : room.feelingSummaryA;
+
+  const historyText = ownHistory.map(h =>
+    `${currentName} 说：${h.question}\nAI 回应：${h.answer}`
+  ).join('\n\n');
+
+  const prompt = `你是一位专业的关系调解顾问。以下是背景：
+
+${currentName} 最初的描述：${ownInput}
+
+${otherName} 目前的感受状态（抽象摘要，不含原话）：${otherFeelingSummary || '暂无'}
+
+${historyText ? `${currentName} 之前的追问记录：\n${historyText}` : ''}
+
+现在，${currentName} 有新的想法：
+${question.trim()}
+
+请直接跟 ${currentName} 说话，用"你"。提到另一方时用"${otherName}"。
+
+重要规则：
+- 你可以基于 ${otherName} 的感受摘要来帮助 ${currentName} 理解对方，但不要编造摘要中没有的具体细节。
+- 不要透露 ${otherName} 说过的任何具体原话或事件描述。
+- 语气温和、中立、真诚，不超过150字。用中文回答。`;
+
+  try {
+    // Step 1: Generate response
+    const message = await client.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 512,
+      messages: [{ role: 'user', content: prompt }]
+    });
+    const answer = message.content[0].text.trim();
+
+    // Step 2: Update this party's feeling summary
+    const updatePrompt = `以下是 ${currentName} 在一次关系调解对话中的最新表述：
+
+${currentName} 之前的感受摘要：${ownFeelingSummary || '暂无'}
+
+${currentName} 的新表述：${question.trim()}
+
+请基于新表述更新 ${currentName} 的感受摘要。摘要只包含情绪、需求和在意的核心点，不包含任何具体事件细节、对话原文或指向性描述。不超过80字。只输出摘要内容，不要加标题或前缀。`;
+
+    const updateMsg = await client.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 256,
+      messages: [{ role: 'user', content: updatePrompt }]
+    });
+    const updatedSummary = updateMsg.content[0].text.trim();
+
+    // Save to room
+    const entry = { question: question.trim(), answer, ts: Date.now() };
+    if (role === 'a') {
+      room.historyA.push(entry);
+      room.feelingSummaryA = updatedSummary;
+    } else {
+      room.historyB.push(entry);
+      room.feelingSummaryB = updatedSummary;
+    }
+    await saveRoom(room.code, room);
+
+    res.json({ answer });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// ─── Analysis Logic ───
+async function runAnalysis(room) {
+  const nA = room.nameA;
+  const nB = room.nameB;
 
   const prompt = `你是一位专业的关系调解顾问。两个人（${nA} 和 ${nB}）在某件事上产生了分歧，他们分别描述了各自的感受。
 
-${nA} 的描述：${inputA}
+${nA} 的描述：${room.inputA}
 
-${nB} 的描述：${inputB}
+${nB} 的描述：${room.inputB}
 
 请完成三部分分析，用温和、中立的语言，不要引用对方原话，转化为感受和需求的描述。直接用第二人称跟当前这方说话，永远用"你"，不要用"她/他"来指代当前读者。提到另一方时用对方的名字。
 
@@ -34,26 +315,24 @@ ${nB} 的描述：${inputB}
 
 请用中文回答，语气温和、克制、真诚。`;
 
-  try {
-    const message = await client.messages.create({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 1024,
-      messages: [{ role: 'user', content: prompt }]
-    });
+  const message = await client.messages.create({
+    model: 'claude-sonnet-4-20250514',
+    max_tokens: 1024,
+    messages: [{ role: 'user', content: prompt }]
+  });
 
-    const text = message.content[0].text;
+  const text = message.content[0].text;
+  const extract = (tag) => {
+    const re = new RegExp(`【${tag}】\\s*([\\s\\S]*?)(?=【|$)`);
+    const m = text.match(re);
+    return m ? m[1].trim() : '';
+  };
 
-    const extract = (tag) => {
-      const re = new RegExp(`【${tag}】\\s*([\\s\\S]*?)(?=【|$)`);
-      const m = text.match(re);
-      return m ? m[1].trim() : '';
-    };
+  // Generate initial feeling summaries
+  const summaryPrompt = `基于以下两个人的描述，分别生成一份简短的感受摘要。摘要只包含情绪、需求和在意的核心点，不包含任何具体事件细节、对话原文或指向性描述。每份摘要不超过80字。
 
-    // Generate initial feeling summaries for both parties
-    const summaryPrompt = `基于以下两个人的描述，分别生成一份简短的感受摘要。摘要只包含情绪、需求和在意的核心点，不包含任何具体事件细节、对话原文或指向性描述。每份摘要不超过80字。
-
-${nA} 的描述：${inputA}
-${nB} 的描述：${inputB}
+${nA} 的描述：${room.inputA}
+${nB} 的描述：${room.inputB}
 
 请用以下格式输出：
 
@@ -63,94 +342,29 @@ ${nB} 的描述：${inputB}
 【${nB}的感受摘要】
 （摘要内容）`;
 
-    const summaryMsg = await client.messages.create({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 512,
-      messages: [{ role: 'user', content: summaryPrompt }]
-    });
+  const summaryMsg = await client.messages.create({
+    model: 'claude-sonnet-4-20250514',
+    max_tokens: 512,
+    messages: [{ role: 'user', content: summaryPrompt }]
+  });
 
-    const sText = summaryMsg.content[0].text;
-    const extractSummary = (name) => {
-      const re = new RegExp(`【${name}的感受摘要】\\s*([\\s\\S]*?)(?=【|$)`);
-      const m = sText.match(re);
-      return m ? m[1].trim() : '';
-    };
+  const sText = summaryMsg.content[0].text;
+  const extractSummary = (name) => {
+    const re = new RegExp(`【${name}的感受摘要】\\s*([\\s\\S]*?)(?=【|$)`);
+    const m = sText.match(re);
+    return m ? m[1].trim() : '';
+  };
 
-    res.json({
-      forA: extract(`给${nA}看`),
-      forB: extract(`给${nB}看`),
-      forBoth: extract('给双方'),
-      feelingSummaryA: extractSummary(nA),
-      feelingSummaryB: extractSummary(nB)
-    });
-  } catch (e) {
-    res.status(500).json({ error: e.message });
-  }
-});
+  return {
+    forA: extract(`给${nA}看`),
+    forB: extract(`给${nB}看`),
+    forBoth: extract('给双方'),
+    feelingSummaryA: extractSummary(nA),
+    feelingSummaryB: extractSummary(nB),
+  };
+}
 
-app.post('/api/followup', async (req, res) => {
-  const { who, question, inputA, inputB, ownHistory, ownFeelingSummary, otherFeelingSummary, nameA, nameB } = req.body;
-
-  const nA = nameA || 'A';
-  const nB = nameB || 'B';
-  const currentName = who === 'a' ? nA : nB;
-  const otherName = who === 'a' ? nB : nA;
-  const ownInput = who === 'a' ? inputA : inputB;
-
-  // Build own history text (only this party's previous follow-ups)
-  const historyText = (ownHistory || []).map(h =>
-    `${currentName} 说：${h.question}\nAI 回应：${h.answer}`
-  ).join('\n\n');
-
-  const prompt = `你是一位专业的关系调解顾问。以下是背景：
-
-${currentName} 最初的描述：${ownInput}
-
-${otherName} 目前的感受状态（抽象摘要，不含原话）：${otherFeelingSummary || '暂无'}
-
-${historyText ? `${currentName} 之前的追问记录：\n${historyText}` : ''}
-
-现在，${currentName} 有新的想法：
-${question}
-
-请直接跟 ${currentName} 说话，用"你"。提到另一方时用"${otherName}"。
-
-重要规则：
-- 你可以基于 ${otherName} 的感受摘要来帮助 ${currentName} 理解对方，但不要编造摘要中没有的具体细节。
-- 不要透露 ${otherName} 说过的任何具体原话或事件描述。
-- 语气温和、中立、真诚，不超过150字。用中文回答。`;
-
-  try {
-    // Step 1: Generate response to this party
-    const message = await client.messages.create({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 512,
-      messages: [{ role: 'user', content: prompt }]
-    });
-    const answer = message.content[0].text.trim();
-
-    // Step 2: Update this party's feeling summary based on new input
-    const updatePrompt = `以下是 ${currentName} 在一次关系调解对话中的最新表述：
-
-${currentName} 之前的感受摘要：${ownFeelingSummary || '暂无'}
-
-${currentName} 的新表述：${question}
-
-请基于新表述更新 ${currentName} 的感受摘要。摘要只包含情绪、需求和在意的核心点，不包含任何具体事件细节、对话原文或指向性描述。不超过80字。只输出摘要内容，不要加标题或前缀。`;
-
-    const updateMsg = await client.messages.create({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 256,
-      messages: [{ role: 'user', content: updatePrompt }]
-    });
-    const updatedFeelingSummary = updateMsg.content[0].text.trim();
-
-    res.json({ answer, updatedFeelingSummary });
-  } catch (e) {
-    res.status(500).json({ error: e.message });
-  }
-});
-
+// ─── Fallback: serve frontend ───
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
