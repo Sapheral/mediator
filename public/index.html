@@ -92,9 +92,9 @@ textarea:focus { outline: none; border-color: #aaa; }
 
   <!-- Phase 1: Entry -->
   <div id="phase-entry">
-    <div class="entry-card">
+    <div class="entry-card" id="create-section">
       <div class="entry-title">创建新房间</div>
-      <div class="entry-desc">创建一个房间，把房间码发给对方。</div>
+      <div class="entry-desc">创建一个房间，把链接发给对方。</div>
       <div class="field">
         <label>你的昵称</label>
         <input type="text" id="create-name" placeholder="输入你的昵称" maxlength="20">
@@ -102,12 +102,12 @@ textarea:focus { outline: none; border-color: #aaa; }
       <button class="btn btn-primary" id="btn-create" onclick="createRoom()">创建房间</button>
     </div>
 
-    <div class="or-divider">或</div>
+    <div class="or-divider" id="or-divider">或</div>
 
-    <div class="entry-card">
+    <div class="entry-card" id="join-section">
       <div class="entry-title">加入房间</div>
-      <div class="entry-desc">输入对方发给你的房间码。</div>
-      <div class="field">
+      <div class="entry-desc">输入你的昵称，加入对方创建的房间。</div>
+      <div class="field" id="join-code-field">
         <label>房间码</label>
         <input type="text" id="join-code" placeholder="输入4位房间码" maxlength="4" style="text-transform:uppercase;letter-spacing:4px;font-family:'SF Mono','Menlo',monospace;">
       </div>
@@ -128,8 +128,8 @@ textarea:focus { outline: none; border-color: #aaa; }
     <div id="room-code-section" class="hidden">
       <div class="code-display">
         <div class="code-value" id="display-code"></div>
-        <div class="code-hint">把这个房间码发给对方</div>
-        <button class="btn-copy" onclick="copyCode()">复制房间码</button>
+        <div class="code-hint">把下方链接发给对方，对方打开即可加入</div>
+        <button class="btn-copy" onclick="copyLink()">复制邀请链接</button>
       </div>
       <div class="divider"></div>
     </div>
@@ -532,11 +532,12 @@ function clearEntryError() {
   document.getElementById('entry-error').classList.add('hidden');
 }
 
-function copyCode() {
-  navigator.clipboard.writeText(S.code).then(() => {
+function copyLink() {
+  const link = window.location.origin + '?room=' + S.code;
+  navigator.clipboard.writeText(link).then(() => {
     const btn = document.querySelector('.btn-copy');
     btn.textContent = '已复制';
-    setTimeout(() => btn.textContent = '复制房间码', 2000);
+    setTimeout(() => btn.textContent = '复制邀请链接', 2000);
   });
 }
 
@@ -554,7 +555,7 @@ function loadSession() {
   return false;
 }
 
-// ─── Init: check for existing session ───
+// ─── Init: check for existing session or URL params ───
 (function init() {
   if (loadSession()) {
     // Resume existing session
@@ -576,8 +577,20 @@ function loadSession() {
 
     updateStatusBar();
     startPolling();
-    // Immediately check status
     pollStatus();
+    return;
+  }
+
+  // Check URL for room parameter (invited user)
+  const urlParams = new URLSearchParams(window.location.search);
+  const roomCode = urlParams.get('room');
+
+  if (roomCode) {
+    // Invited user: only show join section, pre-fill room code
+    document.getElementById('create-section').classList.add('hidden');
+    document.getElementById('or-divider').classList.add('hidden');
+    document.getElementById('join-code').value = roomCode.toUpperCase();
+    document.getElementById('join-code-field').classList.add('hidden');
   }
 })();
 </script>
