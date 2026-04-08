@@ -336,12 +336,9 @@ async function pollStatus() {
       updateStatusBar();
     }
 
-    // Check if analysis is done
-    if (data.status === 'analyzed' && !document.getElementById('result-section').classList.contains('hidden') === false) {
-      // Results not yet shown
-      if (data.status === 'analyzed') {
-        await fetchAndShowResults();
-      }
+    // Check if analysis is done and results not yet shown
+    if (data.status === 'analyzed' && document.getElementById('result-section').classList.contains('hidden')) {
+      await fetchAndShowResults();
     }
 
     // Check analyzing state
@@ -353,6 +350,11 @@ async function pollStatus() {
     // Check consent updates
     if (data.status === 'analyzed') {
       updateConsent(data.consentA, data.consentB, data.forBoth);
+      // Stop polling once both consented — nothing left to sync
+      if (data.consentA && data.consentB && pollTimer) {
+        clearInterval(pollTimer);
+        pollTimer = null;
+      }
     }
 
     updateStatusBar(data);
