@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>调解室</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif; background: #f5f5f0; min-height: 100vh; padding: 2rem 1rem; }
+.app { max-width: 640px; margin: 0 auto; }
+h1 { font-size: 22px; font-weight: 500; margin-bottom: 4px; }
+.subtitle { font-size: 14px; color: #888; margin-bottom: 1.5rem; }
+.tabs { display: flex; gap: 8px; margin-bottom: 1rem; }
+.tab { flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; background: white; color: #888; cursor: pointer; }
+.tab.active-a { border-color: #1D9E75; background: #E1F5EE; color: #0F6E56; font-weight: 500; }
+.tab.active-b { border-color: #378ADD; background: #E6F1FB; color: #185FA5; font-weight: 500; }
+.input-area { display: none; }
+.input-area.visible { display: block; }
+.input-label { font-size: 13px; color: #888; margin-bottom: 6px; }
+textarea { width: 100%; min-height: 130px; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 15px; font-family: inherit; resize: vertical; line-height: 1.6; background: white; }
+textarea:focus { outline: none; border-color: #aaa; }
+.status-row { display: flex; gap: 8px; margin: 1rem 0; }
+.pill { flex: 1; padding: 8px; border-radius: 8px; font-size: 13px; text-align: center; border: 1px solid #ddd; background: #fafafa; color: #aaa; }
+.pill.a { background: #E1F5EE; border-color: #1D9E75; color: #0F6E56; }
+.pill.b { background: #E6F1FB; border-color: #378ADD; color: #185FA5; }
+.btn-main { width: 100%; padding: 12px; border-radius: 8px; font-size: 15px; font-weight: 500; cursor: pointer; border: none; background: #222; color: white; opacity: 0.35; pointer-events: none; }
+.btn-main.ready { opacity: 1; pointer-events: auto; }
+.btn-main.loading { opacity: 0.6; pointer-events: none; }
+.btn-clear { width: 100%; padding: 10px; border-radius: 8px; font-size: 14px; cursor: pointer; border: 1px solid #ddd; background: white; color: #888; margin-top: 8px; }
+.results { margin-top: 1.5rem; }
+.card { border: 1px solid #e0e0e0; border-radius: 12px; background: white; overflow: hidden; margin-bottom: 12px; }
+.card-header { padding: 10px 14px; font-size: 13px; font-weight: 500; border-bottom: 1px solid #eee; }
+.card-header.a { background: #E1F5EE; color: #0F6E56; }
+.card-header.b { background: #E6F1FB; color: #185FA5; }
+.card-header.both { background: #FAEEDA; color: #854F0B; }
+.card-header.neutral { background: #f5f5f5; color: #666; }
+.card-body { padding: 14px; font-size: 15px; line-height: 1.75; color: #222; white-space: pre-wrap; }
+.card-body.locked { color: #bbb; font-size: 14px; }
+.consent-row { display: flex; gap: 8px; padding: 10px 14px; border-top: 1px solid #eee; background: #fafafa; align-items: center; }
+.consent-status { font-size: 13px; color: #888; flex: 1; }
+.consent-btn { padding: 6px 12px; border-radius: 8px; font-size: 13px; cursor: pointer; border: 1px solid #ddd; background: white; }
+.consent-btn.done-a { background: #E1F5EE; border-color: #1D9E75; color: #0F6E56; pointer-events: none; }
+.consent-btn.done-b { background: #E6F1FB; border-color: #378ADD; color: #185FA5; pointer-events: none; }
+.divider { height: 1px; background: #eee; margin: 1.5rem 0; }
+.section-label { font-size: 12px; color: #bbb; margin-bottom: 10px; letter-spacing: 0.05em; }
+.ftabs { display: flex; gap: 6px; margin-bottom: 10px; }
+.ftab { padding: 6px 14px; border-radius: 8px; font-size: 13px; cursor: pointer; border: 1px solid #ddd; background: white; color: #888; }
+.ftab.active-a { background: #E1F5EE; border-color: #1D9E75; color: #0F6E56; }
+.ftab.active-b { background: #E6F1FB; border-color: #378ADD; color: #185FA5; }
+.farea { display: none; }
+.farea.visible { display: block; }
+.btn-followup { margin-top: 8px; padding: 10px 16px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; border: none; background: #222; color: white; opacity: 0.35; pointer-events: none; }
+.btn-followup.ready { opacity: 1; pointer-events: auto; }
+.fitem { border: 1px solid #e0e0e0; border-radius: 12px; overflow: hidden; margin-top: 10px; }
+.fitem-who { padding: 8px 14px; font-size: 12px; font-weight: 500; border-bottom: 1px solid #eee; }
+.fitem-who.a { background: #E1F5EE; color: #0F6E56; }
+.fitem-who.b { background: #E6F1FB; color: #185FA5; }
+.fitem-q { padding: 10px 14px; font-size: 14px; color: #888; font-style: italic; border-bottom: 1px solid #eee; }
+.fitem-ans { padding: 12px 14px; font-size: 15px; line-height: 1.75; color: #222; white-space: pre-wrap; }
+.dots { display: inline-flex; gap: 4px; }
+.dots span { width: 6px; height: 6px; border-radius: 50%; background: #aaa; animation: b 1.2s infinite; }
+.dots span:nth-child(2) { animation-delay: .2s; }
+.dots span:nth-child(3) { animation-delay: .4s; }
+@keyframes b { 0%,80%,100%{transform:translateY(0)} 40%{transform:translateY(-5px)} }
+</style>
+</head>
+<body>
+<div class="app">
+  <h1>调解室</h1>
+  <p class="subtitle">两人分别写下各自的感受，AI 在保护隐私的前提下给出分析。</p>
+
+  <div id="phase-input">
+    <div class="tabs">
+      <button class="tab active-a" id="tab-a" onclick="switchTab('a')">A 的视角</button>
+      <button class="tab" id="tab-b" onclick="switchTab('b')">B 的视角</button>
+    </div>
+    <div class="input-area visible" id="area-a">
+      <p class="input-label">A，说说这件事对你来说是什么感受？发生了什么？</p>
+      <textarea id="input-a" placeholder="写下你想说的……" oninput="updateState()"></textarea>
+    </div>
+    <div class="input-area" id="area-b">
+      <p class="input-label">B，说说这件事对你来说是什么感受？发生了什么？</p>
+      <textarea id="input-b" placeholder="写下你想说的……" oninput="updateState()"></textarea>
+    </div>
+    <div class="status-row">
+      <div class="pill" id="pill-a">A 还未填写</div>
+      <div class="pill" id="pill-b">B 还未填写</div>
+    </div>
+    <button class="btn-main" id="btn-submit" onclick="analyze()">两人都填好了，开始分析</button>
+    <button class="btn-clear" onclick="clearAll()">清空重来</button>
+  </div>
+
+  <div id="phase-result" style="display:none;">
+    <div class="results" id="results"></div>
+    <div class="divider"></div>
+    <p class="section-label">追问</p>
+    <div class="ftabs">
+      <button class="ftab active-a" id="ftab-a" onclick="switchFtab('a')">A 追问</button>
+      <button class="ftab" id="ftab-b" onclick="switchFtab('b')">B 追问</button>
+    </div>
+    <div class="farea visible" id="farea-a">
+      <textarea id="finput-a" placeholder="A：我想进一步说明……" oninput="updateF()"></textarea>
+    </div>
+    <div class="farea" id="farea-b">
+      <textarea id="finput-b" placeholder="B：我想进一步说明……" oninput="updateF()"></textarea>
+    </div>
+    <button class="btn-followup" id="btn-f" onclick="followup()">提交追问</button>
+    <div id="fhistory"></div>
+    <div class="divider"></div>
+    <button class="btn-clear" onclick="clearAll()">清空重来</button>
+  </div>
+</div>
+
+<script>
+let S = { inputA:'', inputB:'', forA:'', forB:'', forBoth:'', consentA:false, consentB:false, ftab:'a', history:[] };
+
+function switchTab(t) {
+  ['a','b'].forEach(x => {
+    document.getElementById('area-'+x).classList.toggle('visible', x===t);
+    document.getElementById('tab-'+x).className = 'tab' + (x===t ? ' active-'+x : '');
+  });
+}
+
+function updateState() {
+  const a = document.getElementById('input-a').value.trim();
+  const b = document.getElementById('input-b').value.trim();
+  document.getElementById('pill-a').textContent = a ? 'A 已填写' : 'A 还未填写';
+  document.getElementById('pill-a').className = 'pill' + (a ? ' a' : '');
+  document.getElementById('pill-b').textContent = b ? 'B 已填写' : 'B 还未填写';
+  document.getElementById('pill-b').className = 'pill' + (b ? ' b' : '');
+  document.getElementById('btn-submit').className = 'btn-main' + (a && b ? ' ready' : '');
+}
+
+function switchFtab(t) {
+  S.ftab = t;
+  ['a','b'].forEach(x => {
+    document.getElementById('farea-'+x).classList.toggle('visible', x===t);
+    document.getElementById('ftab-'+x).className = 'ftab' + (x===t ? ' active-'+x : '');
+  });
+  updateF();
+}
+
+function updateF() {
+  const v = document.getElementById('finput-'+S.ftab).value.trim();
+  document.getElementById('btn-f').className = 'btn-followup' + (v ? ' ready' : '');
+}
+
+function clearAll() {
+  S = { inputA:'', inputB:'', forA:'', forB:'', forBoth:'', consentA:false, consentB:false, ftab:'a', history:[] };
+  document.getElementById('input-a').value = '';
+  document.getElementById('input-b').value = '';
+  document.getElementById('phase-input').style.display = 'block';
+  document.getElementById('phase-result').style.display = 'none';
+  updateState();
+}
+
+function renderResults() {
+  const unlocked = S.consentA && S.consentB;
+  let status = !S.consentA && !S.consentB ? '双方都同意后，将显示共同总结'
+    : S.consentA ? 'A 已同意，等待 B' : 'B 已同意，等待 A';
+  if (unlocked) status = '双方已同意';
+
+  document.getElementById('results').innerHTML = `
+    <div class="card">
+      <div class="card-header a">A，我想告诉你</div>
+      <div class="card-body">${S.forA}</div>
+    </div>
+    <div class="card">
+      <div class="card-header b">B，我想告诉你</div>
+      <div class="card-body">${S.forB}</div>
+    </div>
+    <div class="card">
+      <div class="card-header both">关于这件事</div>
+      ${unlocked ? `<div class="card-body">${S.forBoth}</div>` : `<div class="card-body locked">双方同意分享后显示……</div>`}
+      <div class="consent-row">
+        <span class="consent-status">${status}</span>
+        <button class="consent-btn ${S.consentA?'done-a':''}" onclick="agree('a')">${S.consentA?'A 已同意':'A 同意'}</button>
+        <button class="consent-btn ${S.consentB?'done-b':''}" onclick="agree('b')">${S.consentB?'B 已同意':'B 同意'}</button>
+      </div>
+    </div>`;
+}
+
+function agree(who) {
+  if (who==='a') S.consentA = true;
+  else S.consentB = true;
+  renderResults();
+}
+
+function renderHistory() {
+  document.getElementById('fhistory').innerHTML = S.history.map(h => `
+    <div class="fitem">
+      <div class="fitem-who ${h.who}">${h.who.toUpperCase()} 的追问</div>
+      <div class="fitem-q">${h.question}</div>
+      <div class="fitem-ans">${h.answer}</div>
+    </div>`).join('');
+}
+
+async function analyze() {
+  const a = document.getElementById('input-a').value.trim();
+  const b = document.getElementById('input-b').value.trim();
+  if (!a || !b) return;
+  S.inputA = a; S.inputB = b;
+
+  document.getElementById('btn-submit').className = 'btn-main loading';
+  document.getElementById('btn-submit').textContent = '分析中…';
+  document.getElementById('phase-input').style.display = 'none';
+  document.getElementById('phase-result').style.display = 'block';
+  document.getElementById('results').innerHTML = `<div class="card"><div class="card-header neutral">AI 正在分析</div><div class="card-body"><div class="dots"><span></span><span></span><span></span></div></div></div>`;
+
+  try {
+    const r = await fetch('/api/analyze', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ inputA: a, inputB: b })
+    });
+    const data = await r.json();
+    S.forA = data.forA; S.forB = data.forB; S.forBoth = data.forBoth;
+    renderResults();
+  } catch(e) {
+    document.getElementById('results').innerHTML = `<div class="card"><div class="card-body" style="color:#c00;">出错了，请刷新页面重试。</div></div>`;
+  }
+}
+
+async function followup() {
+  const who = S.ftab;
+  const q = document.getElementById('finput-'+who).value.trim();
+  if (!q) return;
+
+  document.getElementById('btn-f').className = 'btn-followup';
+  const fh = document.getElementById('fhistory');
+  const tmp = document.createElement('div');
+  tmp.className = 'fitem';
+  tmp.innerHTML = `<div class="fitem-who ${who}">${who.toUpperCase()} 的追问</div><div class="fitem-q">${q}</div><div class="fitem-ans"><div class="dots"><span></span><span></span><span></span></div></div>`;
+  fh.appendChild(tmp);
+
+  try {
+    const r = await fetch('/api/followup', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ who, question: q, inputA: S.inputA, inputB: S.inputB, summaryA: S.forA, summaryB: S.forB, history: S.history })
+    });
+    const data = await r.json();
+    S.history.push({ who, question: q, answer: data.answer });
+    document.getElementById('finput-'+who).value = '';
+    renderHistory();
+  } catch(e) {
+    tmp.querySelector('.fitem-ans').textContent = '出错了，请再试一次。';
+  }
+  updateF();
+}
+</script>
+</body>
+</html>
