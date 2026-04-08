@@ -47,10 +47,35 @@ function getRoleByToken(room, token) {
   return null;
 }
 
+// Helper: simple rate limiting per IP
+// Returns true if allowed, false if rate limited
+async function checkRateLimit(ip, action, maxPerHour) {
+  const key = `rate:${action}:${ip}`;
+  try {
+    const count = await redis.incr(key);
+    if (count === 1) {
+      await redis.expire(key, 3600); // 1 hour window
+    }
+    return count <= maxPerHour;
+  } catch (e) {
+    return true; // fail open if Redis is down
+  }
+}
+
+// Get client IP (works behind Vercel proxy)
+function getIP(req) {
+  return req.headers['x-forwarded-for']?.split(',')[0]?.trim() || req.ip || 'unknown';
+}
+
 // ─── API: Create Room ───
 app.post('/api/room/create', async (req, res) => {
   const { name } = req.body;
   if (!name || !name.trim()) return res.status(400).json({ error: '请输入昵称' });
+
+  // Rate limit: 10 rooms per IP per hour
+  if (!await checkRateLimit(getIP(req), 'create', 10)) {
+    return res.status(429).json({ error: '操作过于频繁，请稍后再试' });
+  }
 
   const code = randomCode(4);
   const token = randomToken();
@@ -213,6 +238,10 @@ app.post('/api/room/followup', async (req, res) => {
   const { code, token, question } = req.body;
   if (!question || !question.trim()) return res.status(400).json({ error: '请输入内容' });
 
+  // Rate limit: 30 follow-ups per IP per hour
+  if (!await checkRateLimit(getIP(req), 'followup', 30)) {
+    return res.status(429).json({ error: '追问过于频繁，请稍后再试' });
+  }
   const room = await getRoom(code);
   if (!room) return res.status(404).json({ error: '房间不存在或已过期' });
   if (room.status !== 'analyzed') return res.status(400).json({ error: '请等待分析完成' });
