@@ -3,189 +3,792 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>调解室</title>
+<title>镜室 · miroir</title>
+<link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400;700;900&family=IM+Fell+English:ital@1&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif; background: #f5f5f0; min-height: 100vh; padding: 2rem 1rem; }
-.app { max-width: 640px; margin: 0 auto; }
-h1 { font-size: 22px; font-weight: 500; margin-bottom: 4px; }
-.subtitle { font-size: 14px; color: #888; margin-bottom: 1.5rem; }
+
+:root {
+  --red: #6a0e1a;
+  --red-mid: #8b1828;
+  --red-pale: rgba(106,14,26,0.12);
+  --red-text: #c09098;
+  --bg: #0c0c0c;
+  --bg2: #111111;
+  --bg3: #080808;
+  --border: #1e1e1e;
+  --border-dim: #161616;
+  --stone: #c8c8c8;
+  --stone-mid: #707070;
+  --stone-dim: #505050;
+  --stone-dark: #303030;
+  --mono: 'Space Mono', 'Menlo', monospace;
+  --serif: 'IM Fell English', Georgia, serif;
+  --sans: 'Epilogue', sans-serif;
+}
+
+html, body {
+  background: #1a0428;
+  min-height: 100vh;
+  font-family: var(--mono);
+  color: var(--stone);
+}
+
+.app {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 0 0 4rem;
+}
+
 .hidden { display: none !important; }
 
-/* Entry phase */
-.entry-card { border: 1px solid #e0e0e0; border-radius: 12px; background: white; padding: 20px; margin-bottom: 12px; }
-.entry-title { font-size: 15px; font-weight: 500; margin-bottom: 12px; }
-.entry-desc { font-size: 13px; color: #888; margin-bottom: 12px; line-height: 1.6; }
-.field { margin-bottom: 12px; }
-.field label { display: block; font-size: 13px; color: #888; margin-bottom: 6px; }
-.field input { width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 15px; font-family: inherit; background: white; }
-.field input:focus { outline: none; border-color: #aaa; }
-.or-divider { text-align: center; font-size: 13px; color: #bbb; margin: 16px 0; }
+/* ── TOPBAR ── */
+.topbar {
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.topbar-name {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--red-mid);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+.topbar-tag {
+  font-family: var(--mono);
+  font-size: 8px;
+  color: var(--stone-dark);
+  letter-spacing: 0.1em;
+}
 
-.btn { padding: 12px 20px; border-radius: 8px; font-size: 15px; font-weight: 500; cursor: pointer; border: none; width: 100%; }
-.btn-primary { background: #222; color: white; }
-.btn-primary:disabled { opacity: 0.35; cursor: default; }
-.btn-secondary { background: white; color: #222; border: 1px solid #ddd; margin-top: 8px; }
+/* ── HERO ── */
+.hero {
+  background: var(--bg);
+  padding: 24px 20px 20px;
+  border-bottom: 1px solid var(--border);
+  overflow: hidden;
+}
+.hero-title {
+  font-family: var(--sans);
+  font-weight: 900;
+  font-size: 80px;
+  line-height: 0.85;
+  color: var(--red);
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+  margin-left: -4px;
+  margin-bottom: 18px;
+}
+.hero-quote {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 14px;
+  color: var(--stone-mid);
+  line-height: 1.65;
+  border-left: 2px solid var(--red);
+  padding-left: 12px;
+  margin-bottom: 6px;
+}
+.hero-attr {
+  font-family: var(--mono);
+  font-size: 8px;
+  color: var(--stone-dark);
+  letter-spacing: 0.12em;
+  padding-left: 14px;
+}
 
-/* Room code display */
-.code-display { text-align: center; margin: 16px 0; }
-.code-value { font-size: 32px; font-weight: 600; letter-spacing: 6px; color: #222; font-family: 'SF Mono', 'Menlo', monospace; }
-.code-hint { font-size: 13px; color: #888; margin-top: 8px; }
-.btn-copy { padding: 8px 16px; border-radius: 8px; font-size: 13px; cursor: pointer; border: 1px solid #ddd; background: white; color: #666; margin-top: 8px; }
+/* ── MIRROR IMAGE ── */
+.mirror-section {
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.mirror-frame {
+  width: 160px;
+  height: 210px;
+  border: 2px solid var(--red-mid);
+  border-radius: 80px 80px 50px 50px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 4px 4px 0 var(--red), 6px 6px 0 #1a0428;
+}
+.mirror-frame svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.mirror-caption {
+  margin-top: 10px;
+  font-family: var(--mono);
+  font-size: 7px;
+  color: var(--stone-dark);
+  font-style: italic;
+  letter-spacing: 0.08em;
+  text-align: center;
+}
 
-/* Status indicators */
-.status-bar { padding: 10px 14px; border-radius: 8px; font-size: 13px; text-align: center; margin-bottom: 12px; }
-.status-waiting { background: #FFF8E6; color: #8B6914; border: 1px solid #F0D87A; }
-.status-ok { background: #E1F5EE; color: #0F6E56; border: 1px solid #1D9E75; }
-.status-analyzing { background: #E6F1FB; color: #185FA5; border: 1px solid #378ADD; }
+/* ── BODY ── */
+.body {
+  background: var(--bg);
+  padding: 20px;
+}
 
-/* Input area */
-.input-label { font-size: 13px; color: #888; margin-bottom: 6px; }
-textarea { width: 100%; min-height: 130px; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 15px; font-family: inherit; resize: vertical; line-height: 1.6; background: white; }
-textarea:focus { outline: none; border-color: #aaa; }
-.char-count { text-align: right; font-size: 12px; color: #bbb; margin-top: 4px; }
-.char-count.warning { color: #e07000; }
+.section-head {
+  font-family: var(--sans);
+  font-weight: 900;
+  font-size: 9px;
+  color: var(--stone-dark);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.section-head::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
 
-/* Result cards */
-.card { border: 1px solid #e0e0e0; border-radius: 12px; background: white; overflow: hidden; margin-bottom: 12px; }
-.card-header { padding: 10px 14px; font-size: 13px; font-weight: 500; border-bottom: 1px solid #eee; }
-.card-header.mine { background: #E1F5EE; color: #0F6E56; }
-.card-header.both { background: #FAEEDA; color: #854F0B; }
-.card-header.neutral { background: #f5f5f5; color: #666; }
-.card-body { padding: 14px; font-size: 15px; line-height: 1.75; color: #222; white-space: pre-wrap; }
-.card-body.locked { color: #bbb; font-size: 14px; }
+/* ── ENTRY CARDS ── */
+.entry-card {
+  border: 1px solid var(--border);
+  padding: 14px 14px 14px;
+  margin-bottom: 10px;
+  background: var(--bg2);
+  position: relative;
+  overflow: hidden;
+}
+.entry-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 3px; height: 100%;
+  background: var(--red);
+}
+.entry-card.dim::before {
+  background: #2a0810;
+}
+.entry-card-num {
+  position: absolute;
+  top: -10px; right: 8px;
+  font-family: var(--sans);
+  font-weight: 900;
+  font-size: 52px;
+  color: #181818;
+  line-height: 1;
+  pointer-events: none;
+  user-select: none;
+}
+.entry-title {
+  font-family: var(--sans);
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--stone);
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.entry-desc {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 12px;
+  color: var(--stone-mid);
+  margin-bottom: 12px;
+  line-height: 1.6;
+}
 
-.consent-row { display: flex; gap: 8px; padding: 10px 14px; border-top: 1px solid #eee; background: #fafafa; align-items: center; }
-.consent-status { font-size: 13px; color: #888; flex: 1; }
-.consent-btn { padding: 6px 12px; border-radius: 8px; font-size: 13px; cursor: pointer; border: 1px solid #ddd; background: white; }
-.consent-btn.done { background: #E1F5EE; border-color: #1D9E75; color: #0F6E56; pointer-events: none; }
+/* ── FIELDS ── */
+.field { margin-bottom: 10px; }
+.field label {
+  display: block;
+  font-family: var(--mono);
+  font-size: 8px;
+  color: var(--stone-dark);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+}
+.field input {
+  width: 100%;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  padding: 9px 11px;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--stone-mid);
+  outline: none;
+  border-radius: 0;
+  -webkit-appearance: none;
+}
+.field input:focus {
+  border-color: var(--red-mid);
+  color: var(--stone);
+}
+.field input::placeholder { color: var(--stone-dark); }
 
-.error-card { border: 1px solid #f0c0c0; border-radius: 12px; background: #fff8f8; padding: 16px; margin-bottom: 12px; }
-.error-title { font-size: 14px; font-weight: 500; color: #c00; margin-bottom: 8px; }
-.error-msg { font-size: 14px; color: #666; line-height: 1.6; }
+/* ── BUTTONS ── */
+.btn {
+  width: 100%;
+  padding: 11px;
+  font-family: var(--sans);
+  font-weight: 900;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  text-align: center;
+  cursor: pointer;
+  border: none;
+  border-radius: 0;
+  -webkit-appearance: none;
+}
+.btn-primary {
+  background: var(--red);
+  color: var(--red-text);
+}
+.btn-primary:disabled { opacity: 0.3; cursor: default; }
+.btn-secondary {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--stone-dark);
+}
 
-.divider { height: 1px; background: #eee; margin: 1.5rem 0; }
-.section-label { font-size: 12px; color: #bbb; margin-bottom: 10px; letter-spacing: 0.05em; }
+.or-divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 4px 0 8px;
+}
+.or-divider-line { flex: 1; height: 1px; background: var(--border-dim); }
+.or-divider-text {
+  font-family: var(--mono);
+  font-size: 8px;
+  color: #202020;
+  letter-spacing: 0.1em;
+}
 
-/* Follow-up */
-.fitem { border: 1px solid #e0e0e0; border-radius: 12px; overflow: hidden; margin-top: 10px; }
-.fitem-who { padding: 8px 14px; font-size: 12px; font-weight: 500; border-bottom: 1px solid #eee; background: #f5f5f5; color: #666; }
-.fitem-q { padding: 10px 14px; font-size: 14px; color: #888; font-style: italic; border-bottom: 1px solid #eee; }
-.fitem-ans { padding: 12px 14px; font-size: 15px; line-height: 1.75; color: #222; white-space: pre-wrap; }
+/* ── ROOM CODE ── */
+.code-display {
+  text-align: center;
+  padding: 20px 0 16px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 16px;
+}
+.code-value {
+  font-family: var(--mono);
+  font-size: 36px;
+  font-weight: 700;
+  letter-spacing: 10px;
+  color: var(--red-mid);
+  margin-bottom: 8px;
+}
+.code-hint {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 12px;
+  color: var(--stone-mid);
+  margin-bottom: 10px;
+}
+.btn-copy {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--stone-dark);
+  background: transparent;
+  border: 1px solid var(--border);
+  padding: 7px 14px;
+  cursor: pointer;
+  border-radius: 0;
+}
+.btn-copy:hover { border-color: var(--red-mid); color: var(--stone-mid); }
 
-.btn-followup { margin-top: 8px; padding: 10px 16px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; border: none; background: #222; color: white; }
-.btn-followup:disabled { opacity: 0.35; cursor: default; }
-.fchar-count { text-align: right; font-size: 12px; color: #bbb; margin-top: 4px; }
-.fchar-count.warning { color: #e07000; }
+/* ── STATUS BAR ── */
+.status-bar {
+  padding: 10px 14px;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-align: center;
+  margin-bottom: 14px;
+  border-left: 3px solid transparent;
+}
+.status-waiting {
+  background: #110a04;
+  color: #6a5030;
+  border-left-color: #3a2010;
+}
+.status-ok {
+  background: #040e08;
+  color: #2a6a3a;
+  border-left-color: #1a4028;
+}
+.status-analyzing {
+  background: #060410;
+  color: #3a2a6a;
+  border-left-color: #1a1040;
+}
 
+/* ── INPUT AREA ── */
+.input-label {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 13px;
+  color: var(--stone-mid);
+  margin-bottom: 8px;
+  line-height: 1.6;
+}
+textarea {
+  width: 100%;
+  min-height: 140px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  background: var(--bg3);
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--stone-mid);
+  resize: vertical;
+  line-height: 1.7;
+  outline: none;
+  border-radius: 0;
+  -webkit-appearance: none;
+}
+textarea:focus { border-color: var(--red-mid); color: var(--stone); }
+textarea::placeholder { color: var(--stone-dark); font-style: italic; }
+.char-count {
+  text-align: right;
+  font-family: var(--mono);
+  font-size: 8px;
+  color: var(--stone-dark);
+  margin-top: 4px;
+  letter-spacing: 0.08em;
+}
+.char-count.warning { color: var(--red-mid); }
+
+/* ── RESULT CARDS ── */
+.card {
+  border: 1px solid var(--border);
+  background: var(--bg2);
+  margin-bottom: 12px;
+  overflow: hidden;
+  position: relative;
+}
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 3px; height: 100%;
+  background: var(--red);
+}
+.card-header {
+  padding: 10px 14px 10px 17px;
+  font-family: var(--sans);
+  font-weight: 700;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border);
+}
+.card-header.mine { color: var(--stone-mid); background: #0f0f0f; }
+.card-header.both { color: #5a3a10; background: #0c0904; }
+.card-header.neutral { color: var(--stone-dark); background: #0f0f0f; }
+.card-body {
+  padding: 14px 14px 14px 17px;
+  font-family: var(--serif);
+  font-size: 14px;
+  line-height: 1.8;
+  color: var(--stone-mid);
+  white-space: pre-wrap;
+}
+.card-body.locked {
+  color: var(--stone-dark);
+  font-style: italic;
+  font-size: 13px;
+}
+
+/* ── CONSENT ROW ── */
+.consent-row {
+  display: flex;
+  gap: 8px;
+  padding: 10px 14px;
+  border-top: 1px solid var(--border);
+  background: var(--bg3);
+  align-items: center;
+}
+.consent-status {
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--stone-dark);
+  flex: 1;
+  letter-spacing: 0.06em;
+}
+.consent-btn {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 6px 12px;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--stone-dark);
+  border-radius: 0;
+}
+.consent-btn.done {
+  background: var(--red);
+  border-color: var(--red);
+  color: var(--red-text);
+  pointer-events: none;
+}
+
+/* ── ERROR CARD ── */
+.error-card {
+  border: 1px solid #3a0810;
+  border-left: 3px solid var(--red);
+  background: #0c0306;
+  padding: 14px;
+  margin-bottom: 12px;
+}
+.error-title {
+  font-family: var(--sans);
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--red-mid);
+  margin-bottom: 6px;
+}
+.error-msg {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 13px;
+  color: var(--stone-dark);
+  line-height: 1.6;
+}
+
+/* ── DIVIDER ── */
+.divider {
+  height: 1px;
+  background: var(--border);
+  margin: 1.5rem 0;
+}
+.section-label {
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--stone-dark);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.section-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+/* ── FOLLOW-UP ── */
+.fitem {
+  border: 1px solid var(--border);
+  overflow: hidden;
+  margin-top: 10px;
+  position: relative;
+}
+.fitem::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 2px; height: 100%;
+  background: #2a0810;
+}
+.fitem-who {
+  padding: 7px 14px 7px 16px;
+  font-family: var(--mono);
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg3);
+  color: var(--stone-dark);
+}
+.fitem-q {
+  padding: 10px 14px 10px 16px;
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 13px;
+  color: var(--stone-dark);
+  border-bottom: 1px solid var(--border);
+}
+.fitem-ans {
+  padding: 12px 14px 12px 16px;
+  font-family: var(--serif);
+  font-size: 14px;
+  line-height: 1.8;
+  color: var(--stone-mid);
+  white-space: pre-wrap;
+}
+
+.btn-followup {
+  margin-top: 10px;
+  padding: 10px 16px;
+  font-family: var(--sans);
+  font-weight: 900;
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  cursor: pointer;
+  border: none;
+  background: var(--red);
+  color: var(--red-text);
+  border-radius: 0;
+  width: 100%;
+}
+.btn-followup:disabled { opacity: 0.3; cursor: default; }
+
+.fchar-count {
+  text-align: right;
+  font-family: var(--mono);
+  font-size: 8px;
+  color: var(--stone-dark);
+  margin-top: 4px;
+  letter-spacing: 0.08em;
+}
+.fchar-count.warning { color: var(--red-mid); }
+
+/* ── FOOTER ── */
+.footer-note {
+  padding: 16px 20px;
+  border-top: 1px solid var(--border);
+  background: var(--bg);
+  font-family: var(--mono);
+  font-size: 8px;
+  color: #222;
+  line-height: 2.2;
+  letter-spacing: 0.06em;
+}
+.footer-note span { color: var(--red); margin-right: 4px; }
+
+/* ── DOTS ── */
 .dots { display: inline-flex; gap: 4px; }
-.dots span { width: 6px; height: 6px; border-radius: 50%; background: #aaa; animation: b 1.2s infinite; }
+.dots span {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--red-mid);
+  animation: pulse 1.2s infinite;
+}
 .dots span:nth-child(2) { animation-delay: .2s; }
 .dots span:nth-child(3) { animation-delay: .4s; }
-@keyframes b { 0%,80%,100%{transform:translateY(0)} 40%{transform:translateY(-5px)} }
+@keyframes pulse { 0%,80%,100%{transform:translateY(0);opacity:0.4} 40%{transform:translateY(-4px);opacity:1} }
 </style>
 </head>
 <body>
+
 <div class="app">
-  <h1>调解室</h1>
-  <p class="subtitle">两人分别写下各自的感受，AI 在保护隐私的前提下给出分析。</p>
 
-  <!-- Phase 1: Entry -->
-  <div id="phase-entry">
-    <div class="entry-card" id="create-section">
-      <div class="entry-title">创建新房间</div>
-      <div class="entry-desc">创建一个房间，把链接发给对方。</div>
-      <div class="field">
-        <label>你的昵称</label>
-        <input type="text" id="create-name" placeholder="输入你的昵称" maxlength="20">
-      </div>
-      <button class="btn btn-primary" id="btn-create" onclick="createRoom()">创建房间</button>
-    </div>
-
-    <div class="or-divider" id="or-divider">或</div>
-
-    <div class="entry-card" id="join-section">
-      <div class="entry-title">加入房间</div>
-      <div class="entry-desc">输入你的昵称，加入对方创建的房间。</div>
-      <div class="field" id="join-code-field">
-        <label>房间码</label>
-        <input type="text" id="join-code" placeholder="输入4位房间码" maxlength="4" style="text-transform:uppercase;letter-spacing:4px;font-family:'SF Mono','Menlo',monospace;">
-      </div>
-      <div class="field">
-        <label>你的昵称</label>
-        <input type="text" id="join-name" placeholder="输入你的昵称" maxlength="20">
-      </div>
-      <button class="btn btn-primary" id="btn-join" onclick="joinRoom()">加入</button>
-    </div>
-
-    <div id="entry-error" class="hidden" style="margin-top:12px;"></div>
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <span class="topbar-name">miroir</span>
+    <span class="topbar-tag">装置 / installation · beta</span>
   </div>
 
-  <!-- Phase 2: Room (input + waiting + results + followup) -->
-  <div id="phase-room" class="hidden">
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-title">镜室</div>
+    <div class="hero-quote">一面镜子永远等候她</div>
+    <div class="hero-attr">— 张枣，《镜中》，1984</div>
+  </div>
 
-    <!-- Room code display -->
-    <div id="room-code-section" class="hidden">
-      <div class="code-display">
-        <div class="code-value" id="display-code"></div>
-        <div class="code-hint">把下方链接发给对方，对方打开即可加入</div>
-        <button class="btn-copy" onclick="copyLink()">复制邀请链接</button>
+  <!-- MIRROR -->
+  <div class="mirror-section">
+    <div class="mirror-frame">
+      <svg viewBox="0 0 160 210" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+        <defs>
+          <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#0e0306"/>
+            <stop offset="60%" stop-color="#0a0205"/>
+            <stop offset="100%" stop-color="#120508"/>
+          </linearGradient>
+          <linearGradient id="floor" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#1e0a0e"/>
+            <stop offset="100%" stop-color="#080205"/>
+          </linearGradient>
+          <linearGradient id="shad" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="rgba(120,10,20,0.35)"/>
+            <stop offset="100%" stop-color="rgba(120,10,20,0)"/>
+          </linearGradient>
+        </defs>
+        <rect x="0" y="0" width="160" height="210" fill="url(#sky)"/>
+        <rect x="0" y="140" width="160" height="70" fill="url(#floor)"/>
+        <!-- floor lines -->
+        <line x1="45" y1="140" x2="0" y2="210" stroke="rgba(140,20,30,0.1)" stroke-width="0.7"/>
+        <line x1="80" y1="140" x2="80" y2="210" stroke="rgba(140,20,30,0.07)" stroke-width="0.5"/>
+        <line x1="115" y1="140" x2="160" y2="210" stroke="rgba(140,20,30,0.1)" stroke-width="0.7"/>
+        <line x1="0" y1="158" x2="160" y2="158" stroke="rgba(140,20,30,0.05)" stroke-width="0.4"/>
+        <line x1="0" y1="178" x2="160" y2="178" stroke="rgba(140,20,30,0.04)" stroke-width="0.4"/>
+        <!-- arch columns -->
+        <rect x="28" y="8" width="3" height="132" fill="rgba(140,20,30,0.07)"/>
+        <rect x="129" y="8" width="3" height="132" fill="rgba(140,20,30,0.07)"/>
+        <rect x="28" y="8" width="104" height="3" fill="rgba(140,20,30,0.05)"/>
+        <rect x="28" y="137" width="104" height="3" fill="rgba(140,20,30,0.09)"/>
+        <!-- figure shadow -->
+        <ellipse cx="80" cy="140" rx="18" ry="4" fill="rgba(140,20,30,0.22)"/>
+        <!-- figure body -->
+        <rect x="72" y="82" width="16" height="58" fill="#060102"/>
+        <!-- figure coat -->
+        <rect x="74" y="46" width="12" height="94" fill="#d8c8a0"/>
+        <rect x="74" y="46" width="12" height="4" fill="#987030"/>
+        <!-- head -->
+        <ellipse cx="80" cy="43" rx="6" ry="6" fill="#d8c8a0"/>
+        <!-- neck -->
+        <rect x="78" y="30" width="4" height="14" fill="#0e0306"/>
+        <!-- face -->
+        <rect x="76" y="15" width="8" height="16" fill="#d8c8a0"/>
+        <ellipse cx="80" cy="13" rx="5" ry="4" fill="#d8c8a0"/>
+        <!-- hat -->
+        <path d="M 75 9 Q 80 1 85 9" fill="#080820"/>
+        <path d="M 73 9 Q 74 4 77 3 Q 79 1 80 1 Q 81 1 83 3 Q 86 4 87 8 Q 86 9 84 8 Q 82 6 80 6 Q 78 6 76 8 Z" fill="#161630"/>
+        <!-- shadow cast -->
+        <rect x="0" y="140" width="50" height="70" fill="url(#shad)"/>
+        <!-- mirror text watermark -->
+        <text x="12" y="120" font-family="Epilogue,sans-serif" font-size="7" font-weight="900"
+          fill="rgba(180,10,30,0.1)" letter-spacing="0.08em">MIROIR</text>
+      </svg>
+    </div>
+    <div class="mirror-caption">after Magritte · La Reproduction Interdite · 1937</div>
+  </div>
+
+  <!-- MAIN BODY -->
+  <div class="body">
+
+    <!-- Phase 1: Entry -->
+    <div id="phase-entry">
+      <div class="section-head">— 入口</div>
+
+      <div class="entry-card" id="create-section">
+        <div class="entry-card-num">01</div>
+        <div class="entry-title">开启房间</div>
+        <div class="entry-desc">把那串数字发给对方。各自带来你们的版本。</div>
+        <div class="field">
+          <label>你叫什么</label>
+          <input type="text" id="create-name" placeholder="输入你的名字_" maxlength="20">
+        </div>
+        <button class="btn btn-primary" id="btn-create" onclick="createRoom()">进入 →</button>
       </div>
-      <div class="divider"></div>
+
+      <div class="or-divider" id="or-divider">
+        <div class="or-divider-line"></div>
+        <div class="or-divider-text">or</div>
+        <div class="or-divider-line"></div>
+      </div>
+
+      <div class="entry-card dim" id="join-section">
+        <div class="entry-card-num">02</div>
+        <div class="entry-title">加入房间</div>
+        <div class="entry-desc">输入对方给你的那串数字。</div>
+        <div class="field" id="join-code-field">
+          <label>房间码</label>
+          <input type="text" id="join-code" placeholder="_ _ _ _" maxlength="4"
+            style="text-transform:uppercase;letter-spacing:8px;font-size:16px;">
+        </div>
+        <div class="field">
+          <label>你叫什么</label>
+          <input type="text" id="join-name" placeholder="输入你的名字_" maxlength="20">
+        </div>
+        <button class="btn btn-secondary" id="btn-join" onclick="joinRoom()">进入 →</button>
+      </div>
+
+      <div id="entry-error" class="hidden" style="margin-top:12px;"></div>
     </div>
 
-    <!-- Status bar -->
-    <div id="status-bar" class="status-bar status-waiting"></div>
+    <!-- Phase 2: Room -->
+    <div id="phase-room" class="hidden">
 
-    <!-- Input section -->
-    <div id="input-section">
-      <p class="input-label" id="input-label">说说这件事对你来说是什么感受？发生了什么？</p>
-      <textarea id="my-input" placeholder="写下你想说的……" maxlength="500" oninput="updateInputCount()"></textarea>
-      <div class="char-count" id="input-count">0 / 500</div>
-      <button class="btn btn-primary" id="btn-submit" onclick="submitInput()" disabled>提交</button>
-    </div>
-
-    <!-- Waiting for analysis -->
-    <div id="waiting-section" class="hidden">
-      <div class="card">
-        <div class="card-header neutral">等待中</div>
-        <div class="card-body" id="waiting-text">等待对方提交……</div>
-      </div>
-    </div>
-
-    <!-- Analyzing -->
-    <div id="analyzing-section" class="hidden">
-      <div class="card">
-        <div class="card-header neutral">AI 正在分析</div>
-        <div class="card-body"><div class="dots"><span></span><span></span><span></span></div></div>
-      </div>
-    </div>
-
-    <!-- Results -->
-    <div id="result-section" class="hidden">
-      <div class="card">
-        <div class="card-header mine" id="result-header"></div>
-        <div class="card-body" id="result-body"></div>
-      </div>
-
-      <div class="card" id="both-card">
-        <div class="card-header both">关于这件事</div>
-        <div class="card-body" id="both-body"></div>
-        <div class="consent-row" id="consent-row">
-          <span class="consent-status" id="consent-status"></span>
-          <button class="consent-btn" id="btn-consent" onclick="giveConsent()">我同意公开</button>
+      <!-- Room code display -->
+      <div id="room-code-section" class="hidden">
+        <div class="code-display">
+          <div class="code-value" id="display-code"></div>
+          <div class="code-hint">把下方链接发给对方，对方打开即可加入</div>
+          <button class="btn-copy" onclick="copyLink()">复制邀请链接</button>
         </div>
       </div>
 
-      <div class="divider"></div>
-      <p class="section-label">追问</p>
-      <textarea id="followup-input" placeholder="我想进一步说明……" maxlength="300" oninput="updateFollowupCount()"></textarea>
-      <div class="fchar-count" id="followup-count">0 / 300</div>
-      <button class="btn-followup" id="btn-followup" onclick="submitFollowup()" disabled>提交追问</button>
-      <div id="followup-history"></div>
-    </div>
+      <!-- Status bar -->
+      <div id="status-bar" class="status-bar status-waiting"></div>
+
+      <!-- Input section -->
+      <div id="input-section">
+        <p class="input-label" id="input-label">说说这件事对你来说是什么感受？发生了什么？</p>
+        <textarea id="my-input" placeholder="写下你想说的……" maxlength="500" oninput="updateInputCount()"></textarea>
+        <div class="char-count" id="input-count">0 / 500</div>
+        <button class="btn btn-primary" id="btn-submit" onclick="submitInput()" disabled style="margin-top:10px;">提交</button>
+      </div>
+
+      <!-- Waiting -->
+      <div id="waiting-section" class="hidden">
+        <div class="card">
+          <div class="card-header neutral">另一面正在形成</div>
+          <div class="card-body" id="waiting-text">等待对方提交……</div>
+        </div>
+      </div>
+
+      <!-- Analyzing -->
+      <div id="analyzing-section" class="hidden">
+        <div class="card">
+          <div class="card-header neutral">镜中</div>
+          <div class="card-body"><div class="dots"><span></span><span></span><span></span></div></div>
+        </div>
+      </div>
+
+      <!-- Results -->
+      <div id="result-section" class="hidden">
+        <div class="card">
+          <div class="card-header mine" id="result-header"></div>
+          <div class="card-body" id="result-body"></div>
+        </div>
+
+        <div class="card" id="both-card">
+          <div class="card-header both">你们共同的盲点</div>
+          <div class="card-body" id="both-body"></div>
+          <div class="consent-row" id="consent-row">
+            <span class="consent-status" id="consent-status"></span>
+            <button class="consent-btn" id="btn-consent" onclick="giveConsent()">我愿意看见</button>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+        <p class="section-label">继续说</p>
+        <textarea id="followup-input" placeholder="我想进一步说明……" maxlength="300" oninput="updateFollowupCount()"></textarea>
+        <div class="fchar-count" id="followup-count">0 / 300</div>
+        <button class="btn-followup" id="btn-followup" onclick="submitFollowup()" disabled>提交 →</button>
+        <div id="followup-history"></div>
+      </div>
+
+    </div><!-- /phase-room -->
+
+  </div><!-- /body -->
+
+  <div class="footer-note">
+    <span>*</span>你们各自只能看见写给自己的那一面。<br>
+    <span>*</span>房间在二十四小时后消失。
   </div>
-</div>
+
+</div><!-- /app -->
 
 <script>
 function esc(str) {
@@ -194,119 +797,79 @@ function esc(str) {
   return d.innerHTML;
 }
 
-// Session state
 let S = {
-  code: null,
-  token: null,
-  role: null,
-  myName: null,
-  otherName: null,
-  submitted: false,
-  myConsent: false,
+  code: null, token: null, role: null,
+  myName: null, otherName: null,
+  submitted: false, myConsent: false,
 };
 
 let pollTimer = null;
 
-// ─── Entry: Create Room ───
 async function createRoom() {
   const name = document.getElementById('create-name').value.trim();
   if (!name) return showEntryError('请输入昵称');
   clearEntryError();
-
   try {
     const r = await fetch('/api/room/create', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name })
     });
     const data = await r.json();
     if (!r.ok) throw new Error(data.error);
-
-    S.code = data.code;
-    S.token = data.token;
-    S.role = 'a';
-    S.myName = name;
-    saveSession();
-    enterRoom(true);
-  } catch (e) {
-    showEntryError(e.message);
-  }
+    S.code = data.code; S.token = data.token; S.role = 'a'; S.myName = name;
+    saveSession(); enterRoom(true);
+  } catch (e) { showEntryError(e.message); }
 }
 
-// ─── Entry: Join Room ───
 async function joinRoom() {
   const code = document.getElementById('join-code').value.trim().toUpperCase();
   const name = document.getElementById('join-name').value.trim();
   if (!code) return showEntryError('请输入房间码');
   if (!name) return showEntryError('请输入昵称');
   clearEntryError();
-
   try {
     const r = await fetch('/api/room/join', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ code, name })
     });
     const data = await r.json();
     if (!r.ok) throw new Error(data.error);
-
-    S.code = data.code;
-    S.token = data.token;
-    S.role = 'b';
-    S.myName = name;
-    S.otherName = data.nameA;
-    saveSession();
-    enterRoom(false);
-  } catch (e) {
-    showEntryError(e.message);
-  }
+    S.code = data.code; S.token = data.token; S.role = 'b';
+    S.myName = name; S.otherName = data.nameA;
+    saveSession(); enterRoom(false);
+  } catch (e) { showEntryError(e.message); }
 }
 
-// ─── Enter Room UI ───
 function enterRoom(isCreator) {
   document.getElementById('phase-entry').classList.add('hidden');
   document.getElementById('phase-room').classList.remove('hidden');
-
-  // Show room code for creator
   if (isCreator) {
     document.getElementById('room-code-section').classList.remove('hidden');
     document.getElementById('display-code').textContent = S.code;
   }
-
-  // Set up input label
-  document.getElementById('input-label').textContent = S.myName + '，说说这件事对你来说是什么感受？发生了什么？';
-  updateStatusBar();
-  startPolling();
+  document.getElementById('input-label').textContent = S.myName + '，你带来了什么？';
+  updateStatusBar(); startPolling();
 }
 
-// ─── Submit Input ───
 async function submitInput() {
   const input = document.getElementById('my-input').value.trim();
   if (!input) return;
-
   document.getElementById('btn-submit').disabled = true;
   document.getElementById('btn-submit').textContent = '提交中…';
-
   try {
     const r = await fetch('/api/room/submit', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ code: S.code, token: S.token, input })
     });
     const data = await r.json();
     if (!r.ok) throw new Error(data.error);
-
-    S.submitted = true;
-    saveSession();
-
+    S.submitted = true; saveSession();
     if (data.status === 'analyzed') {
-      // This was the second submission, analysis done
       await fetchAndShowResults();
     } else {
-      // Waiting for other party
       document.getElementById('input-section').classList.add('hidden');
       document.getElementById('waiting-section').classList.remove('hidden');
-      document.getElementById('waiting-text').textContent = S.otherName ? '等待 ' + S.otherName + ' 提交……' : '等待对方提交……';
+      document.getElementById('waiting-text').textContent = S.otherName ? '等待 ' + S.otherName + ' 提交……' : '另一面正在形成……';
     }
   } catch (e) {
     document.getElementById('btn-submit').disabled = false;
@@ -315,7 +878,6 @@ async function submitInput() {
   }
 }
 
-// ─── Polling ───
 function startPolling() {
   if (pollTimer) clearInterval(pollTimer);
   pollTimer = setInterval(pollStatus, 3000);
@@ -323,58 +885,39 @@ function startPolling() {
 
 async function pollStatus() {
   if (!S.code || !S.token) return;
-
   try {
     const r = await fetch(`/api/room/status?code=${S.code}&token=${S.token}`);
-
-    // Room expired or not found
     if (r.status === 404) {
       if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
       sessionStorage.removeItem('mediator_session');
       document.getElementById('phase-room').innerHTML = `
         <div class="error-card">
           <div class="error-title">房间已过期</div>
-          <div class="error-msg">这个房间已经不存在了（房间会在创建 24 小时后自动过期）。</div>
+          <div class="error-msg">这个房间已经不存在了。房间会在创建 24 小时后自动消失。</div>
           <button class="btn btn-primary" style="margin-top:12px;" onclick="window.location.href='/'">重新开始</button>
         </div>`;
       return;
     }
-
     if (!r.ok) return;
     const data = await r.json();
-
-    // Update other's name
     if (data.otherName && !S.otherName) {
-      S.otherName = data.otherName;
-      saveSession();
-      updateStatusBar();
+      S.otherName = data.otherName; saveSession(); updateStatusBar();
     }
-
-    // Check if analysis is done and results not yet shown
     if (data.status === 'analyzed' && document.getElementById('result-section').classList.contains('hidden')) {
       await fetchAndShowResults();
     }
-
-    // Check analyzing state
     if (data.status === 'analyzing' && S.submitted) {
       document.getElementById('waiting-section').classList.add('hidden');
       document.getElementById('analyzing-section').classList.remove('hidden');
     }
-
-    // Check consent updates
     if (data.status === 'analyzed') {
       updateConsent(data.consentA, data.consentB, data.forBoth);
-      // Stop polling once both consented — nothing left to sync
       if (data.consentA && data.consentB && pollTimer) {
-        clearInterval(pollTimer);
-        pollTimer = null;
+        clearInterval(pollTimer); pollTimer = null;
       }
     }
-
     updateStatusBar(data);
-  } catch (e) {
-    // silent
-  }
+  } catch (e) {}
 }
 
 async function fetchAndShowResults() {
@@ -382,83 +925,62 @@ async function fetchAndShowResults() {
     const r = await fetch(`/api/room/status?code=${S.code}&token=${S.token}`);
     const data = await r.json();
     if (data.status !== 'analyzed') return;
-
     if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
-
-    // Hide other sections
     document.getElementById('input-section').classList.add('hidden');
     document.getElementById('waiting-section').classList.add('hidden');
     document.getElementById('analyzing-section').classList.add('hidden');
     document.getElementById('room-code-section').classList.add('hidden');
     document.getElementById('status-bar').classList.add('hidden');
-
-    // Show results
     const rs = document.getElementById('result-section');
     rs.classList.remove('hidden');
     document.getElementById('result-header').textContent = S.myName + '，我想告诉你';
     document.getElementById('result-body').textContent = data.myAnalysis;
-
     updateConsent(data.consentA, data.consentB, data.forBoth);
-
-    // Show history if any
-    if (data.myHistory && data.myHistory.length > 0) {
-      renderHistory(data.myHistory);
-    }
-
-    // Restart polling (slower) for consent updates
+    if (data.myHistory && data.myHistory.length > 0) renderHistory(data.myHistory);
     pollTimer = setInterval(pollStatus, 5000);
-  } catch (e) {
-    // silent
-  }
+  } catch (e) {}
 }
 
-// ─── Consent ───
 function updateConsent(consentA, consentB, forBoth) {
   const myConsent = S.role === 'a' ? consentA : consentB;
   const otherConsent = S.role === 'a' ? consentB : consentA;
   S.myConsent = myConsent;
-
   const btn = document.getElementById('btn-consent');
   const statusEl = document.getElementById('consent-status');
   const bodyEl = document.getElementById('both-body');
-
   if (myConsent && otherConsent && forBoth) {
     bodyEl.textContent = forBoth;
     bodyEl.className = 'card-body';
     document.getElementById('consent-row').classList.add('hidden');
   } else if (myConsent) {
-    bodyEl.textContent = '双方同意分享后显示……';
+    bodyEl.textContent = '双方都愿意看见之后，这里才会显示。';
     bodyEl.className = 'card-body locked';
     btn.textContent = '已同意';
     btn.className = 'consent-btn done';
-    statusEl.textContent = '等待' + (S.otherName || '对方') + '同意';
+    statusEl.textContent = '等待' + (S.otherName || '对方') + '……';
   } else if (otherConsent) {
-    bodyEl.textContent = '双方同意分享后显示……';
+    bodyEl.textContent = '双方都愿意看见之后，这里才会显示。';
     bodyEl.className = 'card-body locked';
     statusEl.textContent = (S.otherName || '对方') + '已同意，等待你';
   } else {
-    bodyEl.textContent = '双方同意分享后显示……';
+    bodyEl.textContent = '双方都愿意看见之后，这里才会显示。';
     bodyEl.className = 'card-body locked';
-    statusEl.textContent = '双方都同意后，将显示共同总结';
+    statusEl.textContent = '双方都同意后解锁';
   }
 }
 
 async function giveConsent() {
   try {
     const r = await fetch('/api/room/consent', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ code: S.code, token: S.token })
     });
     const data = await r.json();
     if (!r.ok) throw new Error(data.error);
     updateConsent(data.consentA, data.consentB, data.forBoth);
-  } catch (e) {
-    // silent
-  }
+  } catch (e) {}
 }
 
-// ─── Follow-up ───
 function updateFollowupCount() {
   const v = document.getElementById('followup-input').value;
   const fc = document.getElementById('followup-count');
@@ -470,23 +992,19 @@ function updateFollowupCount() {
 async function submitFollowup() {
   const q = document.getElementById('followup-input').value.trim();
   if (!q) return;
-
   document.getElementById('btn-followup').disabled = true;
   const fh = document.getElementById('followup-history');
   const tmp = document.createElement('div');
   tmp.className = 'fitem';
-  tmp.innerHTML = `<div class="fitem-who">你的追问</div><div class="fitem-q">${esc(q)}</div><div class="fitem-ans"><div class="dots"><span></span><span></span><span></span></div></div>`;
+  tmp.innerHTML = `<div class="fitem-who">你说</div><div class="fitem-q">${esc(q)}</div><div class="fitem-ans"><div class="dots"><span></span><span></span><span></span></div></div>`;
   fh.appendChild(tmp);
-
   try {
     const r = await fetch('/api/room/followup', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ code: S.code, token: S.token, question: q })
     });
     const data = await r.json();
     if (!r.ok) throw new Error(data.error);
-
     tmp.querySelector('.fitem-ans').textContent = data.answer;
     document.getElementById('followup-input').value = '';
     updateFollowupCount();
@@ -500,33 +1018,30 @@ function renderHistory(history) {
   const fh = document.getElementById('followup-history');
   fh.innerHTML = history.map(h => `
     <div class="fitem">
-      <div class="fitem-who">你的追问</div>
+      <div class="fitem-who">你说</div>
       <div class="fitem-q">${esc(h.question)}</div>
       <div class="fitem-ans">${esc(h.answer)}</div>
     </div>`).join('');
 }
 
-// ─── UI Helpers ───
 function updateStatusBar(data) {
   const bar = document.getElementById('status-bar');
   if (!S.otherName) {
     bar.className = 'status-bar status-waiting';
-    bar.textContent = '等待对方加入……';
+    bar.textContent = '等待另一面加入……';
   } else if (!S.submitted) {
     bar.className = 'status-bar status-ok';
-    bar.textContent = S.otherName + ' 已加入';
+    bar.textContent = S.otherName + ' 已进入';
   } else if (data && data.status === 'analyzing') {
     bar.className = 'status-bar status-analyzing';
-    bar.textContent = 'AI 正在分析……';
+    bar.textContent = '镜中……';
   } else if (data && data.status === 'analyzed') {
     bar.className = 'status-bar status-ok';
     bar.textContent = '分析完成';
   } else {
     bar.className = 'status-bar status-waiting';
-    bar.textContent = '等待' + (S.otherName || '对方') + '提交……';
+    bar.textContent = '等待' + (S.otherName || '对方') + '……';
   }
-
-  // Enable submit button
   updateInputCount();
 }
 
@@ -543,10 +1058,7 @@ function showEntryError(msg) {
   el.classList.remove('hidden');
   el.innerHTML = `<div class="error-card"><div class="error-title">出了点问题</div><div class="error-msg">${esc(msg)}</div></div>`;
 }
-
-function clearEntryError() {
-  document.getElementById('entry-error').classList.add('hidden');
-}
+function clearEntryError() { document.getElementById('entry-error').classList.add('hidden'); }
 
 function copyLink() {
   const link = window.location.origin + '?room=' + S.code;
@@ -557,11 +1069,7 @@ function copyLink() {
   });
 }
 
-// ─── Session persistence (survives page refresh within same tab) ───
-function saveSession() {
-  sessionStorage.setItem('mediator_session', JSON.stringify(S));
-}
-
+function saveSession() { sessionStorage.setItem('mediator_session', JSON.stringify(S)); }
 function loadSession() {
   const saved = sessionStorage.getItem('mediator_session');
   if (saved) {
@@ -571,38 +1079,25 @@ function loadSession() {
   return false;
 }
 
-// ─── Init: check for existing session or URL params ───
 (function init() {
   if (loadSession()) {
-    // Resume existing session
     document.getElementById('phase-entry').classList.add('hidden');
     document.getElementById('phase-room').classList.remove('hidden');
-
     if (S.role === 'a' && !S.otherName) {
       document.getElementById('room-code-section').classList.remove('hidden');
       document.getElementById('display-code').textContent = S.code;
     }
-
-    document.getElementById('input-label').textContent = S.myName + '，说说这件事对你来说是什么感受？发生了什么？';
-
+    document.getElementById('input-label').textContent = S.myName + '，你带来了什么？';
     if (S.submitted) {
       document.getElementById('input-section').classList.add('hidden');
       document.getElementById('waiting-section').classList.remove('hidden');
-      // Poll will handle showing results
     }
-
-    updateStatusBar();
-    startPolling();
-    pollStatus();
+    updateStatusBar(); startPolling(); pollStatus();
     return;
   }
-
-  // Check URL for room parameter (invited user)
   const urlParams = new URLSearchParams(window.location.search);
   const roomCode = urlParams.get('room');
-
   if (roomCode) {
-    // Invited user: only show join section, pre-fill room code
     document.getElementById('create-section').classList.add('hidden');
     document.getElementById('or-divider').classList.add('hidden');
     document.getElementById('join-code').value = roomCode.toUpperCase();
