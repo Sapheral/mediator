@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>镜室 · miroir</title>
-<link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400;700;900&family=IM+Fell+English:ital@1&family=Space+Mono:wght@400;700&family=ZCOOL+XiaoWei&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400;700;900&family=IM+Fell+English:ital@1&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -76,12 +76,13 @@ html, body {
   overflow: hidden;
 }
 .hero-title {
-  font-family: 'ZCOOL XiaoWei', 'PingFang SC', serif;
-  font-weight: 400;
+  font-family: var(--sans);
+  font-weight: 900;
   font-size: 80px;
   line-height: 0.85;
   color: var(--red);
-  letter-spacing: -0.02em;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
   margin-left: -4px;
   margin-bottom: 18px;
 }
@@ -660,12 +661,13 @@ textarea::placeholder { color: var(--stone-dark); font-style: italic; }
     position: absolute;
     top: 56px;
     left: 40px;
-    font-family: 'ZCOOL XiaoWei', 'PingFang SC', serif;
-    font-weight: 400;
-    font-size: clamp(130px, 17vw, 210px);
-    line-height: 0.88;
+    font-family: var(--sans);
+    font-weight: 900;
+    font-size: clamp(120px, 18vw, 220px);
+    line-height: 0.82;
     color: var(--red);
-    letter-spacing: -0.02em;
+    letter-spacing: -0.04em;
+    text-transform: uppercase;
     z-index: 1;
     user-select: none;
   }
