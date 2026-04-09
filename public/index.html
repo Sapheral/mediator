@@ -19,9 +19,9 @@
   --border: #1e1e1e;
   --border-dim: #161616;
   --stone: #c8c8c8;
-  --stone-mid: #909090;
-  --stone-dim: #707070;
-  --stone-dark: #585858;
+  --stone-mid: #888888;
+  --stone-dim: #686868;
+  --stone-dark: #505050;
   --mono: 'Space Mono', 'Menlo', monospace;
   --serif: 'IM Fell English', Georgia, serif;
   --sans: 'Epilogue', sans-serif;
@@ -104,23 +104,24 @@ html, body {
   padding-left: 14px;
 }
 .hero-intro {
-  font-family: var(--serif);
-  font-style: italic;
-  font-size: 12px;
-  color: var(--stone-mid);
-  line-height: 1.75;
-  margin-top: 18px;
+  margin-top: 20px;
   padding-top: 16px;
   border-top: 1px solid var(--border);
 }
-.intro-privacy {
+.hero-intro-body {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 13px;
+  color: var(--stone-mid);
+  line-height: 1.8;
+  margin-bottom: 12px;
+}
+.hero-intro-privacy {
   font-family: var(--mono);
-  font-style: normal;
   font-size: 9px;
   color: var(--stone-dim);
   letter-spacing: 0.04em;
-  line-height: 1.8;
-  display: block;
+  line-height: 1.9;
   border-left: 2px solid #2a0810;
   padding-left: 10px;
 }
@@ -237,7 +238,10 @@ html, body {
   display: block;
   font-family: var(--mono);
   font-size: 8px;
-  color: #707070;
+  color: var(--stone-dark);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin-bottom: 5px;
 }
 .field input {
   width: 100%;
@@ -255,7 +259,7 @@ html, body {
   border-color: var(--red-mid);
   color: var(--stone);
 }
-.field input::placeholder { color: #585858; }
+.field input::placeholder { color: #505050; }
 
 /* ── BUTTONS ── */
 .btn {
@@ -280,7 +284,7 @@ html, body {
 .btn-secondary {
   background: transparent;
   border: 1px solid var(--border);
-  color: var(--stone-dark);
+  color: var(--stone-mid);
 }
 
 .or-divider {
@@ -293,7 +297,7 @@ html, body {
 .or-divider-text {
   font-family: var(--mono);
   font-size: 8px;
-  color: #606060;
+  color: #545454;
   letter-spacing: 0.1em;
 }
 
@@ -325,7 +329,13 @@ html, body {
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--stone-mid);
-.btn-copy:hover { border-color: var(--red-mid); color: var(--stone-mid); }
+  background: transparent;
+  border: 1px solid var(--border);
+  padding: 7px 14px;
+  cursor: pointer;
+  border-radius: 0;
+}
+.btn-copy:hover { border-color: var(--red-mid); color: var(--stone); }
 
 /* ── STATUS BAR ── */
 .status-bar {
@@ -414,7 +424,7 @@ textarea::placeholder { color: var(--stone-dark); font-style: italic; }
   border-bottom: 1px solid var(--border);
 }
 .card-header.mine { color: var(--stone-mid); background: #0f0f0f; }
-.card-header.both { color: #7a5a20; background: #0c0904; }
+.card-header.both { color: #5a3a10; background: #0c0904; }
 .card-header.neutral { color: var(--stone-dark); background: #0f0f0f; }
 .card-body {
   padding: 14px 14px 14px 17px;
@@ -590,11 +600,11 @@ textarea::placeholder { color: var(--stone-dark); font-style: italic; }
   background: var(--bg);
   font-family: var(--mono);
   font-size: 8px;
-  color: #888888;
+  color: #404040;
   line-height: 2.2;
   letter-spacing: 0.06em;
 }
-.footer-note span { color: var(--red); margin-right: 4px; }
+.footer-note span { color: #5a1020; margin-right: 4px; }
 
 /* ── DOTS ── */
 .dots { display: inline-flex; gap: 4px; }
@@ -616,7 +626,6 @@ textarea::placeholder { color: var(--stone-dark); font-style: italic; }
   <!-- TOPBAR -->
   <div class="topbar">
     <span class="topbar-name">miroir</span>
-    <span class="topbar-tag">装置 / installation · beta</span>
   </div>
 
   <!-- HERO -->
@@ -625,9 +634,8 @@ textarea::placeholder { color: var(--stone-dark); font-style: italic; }
     <div class="hero-quote">一面镜子永远等候她</div>
     <div class="hero-attr">— 张枣，《镜中》，1984</div>
     <div class="hero-intro">
-      两个人，同一件事，各自的版本。<br>
-      你们分别写下自己的感受，AI 在两者之间充当中间人——帮你理解对方，帮对方理解你。<br><br>
-      <span class="intro-privacy">你说的话，对方永远看不到。AI 只会把感受的核心传递过去，不会引用你的原话。</span>
+      <p class="hero-intro-body">两个人，同一件事，各自的版本。<br>你们分别说出自己的感受，这里会帮你听见对方——以及帮对方听见你。</p>
+      <p class="hero-intro-privacy">你说的话，对方永远看不到。<br>传递给对方的，只是感受的轮廓，不是你的原话。</p>
     </div>
   </div>
 
