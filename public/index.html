@@ -1066,23 +1066,37 @@ async function submitInput() {
   if (!input) return;
   document.getElementById('btn-submit').disabled = true;
   document.getElementById('btn-submit').textContent = '提交中…';
+
+  // Immediately switch to waiting UI
+  document.getElementById('input-section').classList.add('hidden');
+  document.getElementById('status-bar').classList.add('hidden');
+  document.getElementById('waiting-section').classList.remove('hidden');
+  document.getElementById('waiting-text').textContent = S.otherName ? '等待 ' + S.otherName + ' 写下另一面……' : '等待对方加入并写下另一面……';
+
+  // If fetch takes > 2s, it means analysis is running — show analyzing UI
+  const analyzeTimer = setTimeout(() => {
+    document.getElementById('waiting-section').classList.add('hidden');
+    document.getElementById('analyzing-section').classList.remove('hidden');
+  }, 2000);
+
   try {
     const r = await fetch('/api/room/submit', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ code: S.code, token: S.token, input })
     });
+    clearTimeout(analyzeTimer);
     const data = await r.json();
     if (!r.ok) throw new Error(data.error);
     S.submitted = true; saveSession();
     if (data.status === 'analyzed') {
       await fetchAndShowResults();
-    } else {
-      document.getElementById('input-section').classList.add('hidden');
-      document.getElementById('waiting-section').classList.remove('hidden');
-      document.getElementById('status-bar').classList.add('hidden');
-      document.getElementById('waiting-text').textContent = S.otherName ? '等待 ' + S.otherName + ' 写下另一面……' : '等待对方写下另一面……';
     }
+    // If status is 'waiting', polling will handle the transition
   } catch (e) {
+    clearTimeout(analyzeTimer);
+    document.getElementById('input-section').classList.remove('hidden');
+    document.getElementById('waiting-section').classList.add('hidden');
+    document.getElementById('analyzing-section').classList.add('hidden');
     document.getElementById('btn-submit').disabled = false;
     document.getElementById('btn-submit').textContent = '提交';
     showEntryError(e.message);
@@ -1112,7 +1126,12 @@ async function pollStatus() {
     if (!r.ok) return;
     const data = await r.json();
     if (data.otherName && !S.otherName) {
-      S.otherName = data.otherName; saveSession(); updateStatusBar();
+      S.otherName = data.otherName; saveSession();
+      // If we're already in waiting state, update the waiting text with their name
+      if (S.submitted && !document.getElementById('waiting-section').classList.contains('hidden')) {
+        document.getElementById('waiting-text').textContent = '等待 ' + S.otherName + ' 写下另一面……';
+      }
+      updateStatusBar();
     }
     if (data.status === 'analyzed' && document.getElementById('result-section').classList.contains('hidden')) {
       await fetchAndShowResults();
