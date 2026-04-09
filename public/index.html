@@ -19,9 +19,9 @@
   --border: #1e1e1e;
   --border-dim: #161616;
   --stone: #c8c8c8;
-  --stone-mid: #707070;
-  --stone-dim: #505050;
-  --stone-dark: #303030;
+  --stone-mid: #888888;
+  --stone-dim: #686868;
+  --stone-dark: #505050;
   --mono: 'Space Mono', 'Menlo', monospace;
   --serif: 'IM Fell English', Georgia, serif;
   --sans: 'Epilogue', sans-serif;
@@ -600,11 +600,11 @@ textarea::placeholder { color: var(--stone-dark); font-style: italic; }
   background: var(--bg);
   font-family: var(--mono);
   font-size: 8px;
-  color: #222;
+  color: #404040;
   line-height: 2.2;
   letter-spacing: 0.06em;
 }
-.footer-note span { color: var(--red); margin-right: 4px; }
+.footer-note span { color: #5a1020; margin-right: 4px; }
 
 /* ── DOTS ── */
 .dots { display: inline-flex; gap: 4px; }
@@ -618,197 +618,37 @@ textarea::placeholder { color: var(--stone-dark); font-style: italic; }
 .dots span:nth-child(3) { animation-delay: .4s; }
 @keyframes pulse { 0%,80%,100%{transform:translateY(0);opacity:0.4} 40%{transform:translateY(-4px);opacity:1} }
 
-/* ── DESKTOP LANDING (hidden on mobile) ── */
-.desktop-landing {
-  display: none;
-}
-
-/* ── SCROLL HINT ── */
-.scroll-hint {
-  position: absolute;
-  bottom: 32px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-family: var(--mono);
-  font-size: 8px;
-  color: var(--stone-dark);
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  animation: fadeupdown 2s ease-in-out infinite;
-}
-.scroll-hint::after {
-  content: '';
-  width: 1px;
-  height: 28px;
-  background: var(--stone-dark);
-}
-@keyframes fadeupdown {
-  0%,100% { opacity: 0.3; transform: translateX(-50%) translateY(0); }
-  50% { opacity: 0.7; transform: translateX(-50%) translateY(6px); }
-}
+/* ── DESKTOP LANDING ── */
+.desktop-landing { display: none; }
 
 /* ── RESPONSIVE ── */
 @media (min-width: 768px) {
-
-  /* Hide mobile topbar, hero, mirror on desktop — replaced by landing */
+  html, body { background: var(--bg); }
   .topbar { display: none; }
   .hero { display: none; }
   .mirror-section { display: none; }
 
-  /* Show desktop landing */
   .desktop-landing {
-    display: flex;
+    display: block;
     position: relative;
     width: 100%;
     height: 100vh;
-    min-height: 600px;
+    min-height: 580px;
     background: var(--bg);
     border-bottom: 1px solid var(--border);
     overflow: hidden;
   }
 
-  /* Left column: text */
-  .dl-left {
-    width: 52%;
-    padding: 60px 48px 60px 60px;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    position: relative;
-    z-index: 2;
-  }
-
-  .dl-title {
-    font-family: var(--sans);
-    font-weight: 900;
-    font-size: clamp(100px, 16vw, 200px);
-    line-height: 0.82;
-    color: var(--red);
-    letter-spacing: -0.04em;
-    text-transform: uppercase;
-    margin-left: -6px;
-    margin-bottom: 40px;
-  }
-
-  .dl-quote {
-    font-family: var(--serif);
-    font-style: italic;
-    font-size: 16px;
-    color: var(--stone-mid);
-    line-height: 1.65;
-    border-left: 2px solid var(--red);
-    padding-left: 14px;
-    margin-bottom: 6px;
-  }
-
-  .dl-attr {
-    font-family: var(--mono);
-    font-size: 9px;
-    color: var(--stone-dark);
-    letter-spacing: 0.12em;
-    padding-left: 16px;
-    margin-bottom: 40px;
-  }
-
-  .dl-intro-body {
-    font-family: var(--serif);
-    font-style: italic;
-    font-size: 13px;
-    color: var(--stone-mid);
-    line-height: 1.8;
-    margin-bottom: 12px;
-    max-width: 380px;
-  }
-
-  .dl-intro-privacy {
-    font-family: var(--mono);
-    font-size: 9px;
-    color: var(--stone-dim);
-    letter-spacing: 0.04em;
-    line-height: 1.9;
-    border-left: 2px solid #2a0810;
-    padding-left: 10px;
-    max-width: 340px;
-  }
-
-  /* Right column: mirror image */
-  .dl-right {
-    width: 48%;
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 60px 60px 60px 0;
-  }
-
-  .dl-mirror-frame {
-    width: 220px;
-    height: 290px;
-    border: 2px solid var(--red-mid);
-    border-radius: 110px 110px 70px 70px;
-    overflow: hidden;
-    position: relative;
-    box-shadow: 6px 6px 0 var(--red), 10px 10px 0 #1a0428;
-  }
-
-  .dl-mirror-frame img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center 20%;
-    display: block;
-  }
-
-  .dl-mirror-caption {
-    position: absolute;
-    bottom: 40px;
-    right: 60px;
-    font-family: var(--mono);
-    font-size: 7px;
-    color: var(--stone-dark);
-    font-style: italic;
-    letter-spacing: 0.08em;
-  }
-
-  /* Desktop body: wider, two-column entry cards */
-  .app {
-    max-width: 100%;
-  }
-
-  .body {
-    max-width: 860px;
-    margin: 0 auto;
-    padding: 48px 60px 80px;
-  }
-
-  /* Entry cards side by side */
-  .entry-cards-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-    align-items: start;
-  }
-
-  .or-divider {
-    display: none;
-  }
-
-  /* Wider topbar for desktop — shown inside body area via dl-topbar */
   .dl-topbar {
     position: absolute;
     top: 0; left: 0; right: 0;
-    padding: 18px 60px;
+    padding: 16px 52px;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg);
+    z-index: 10;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    z-index: 10;
-    border-bottom: 1px solid var(--border);
   }
-
   .dl-topbar-name {
     font-family: var(--mono);
     font-size: 11px;
@@ -817,15 +657,155 @@ textarea::placeholder { color: var(--stone-dark); font-style: italic; }
     text-transform: uppercase;
   }
 
-  /* Phase-room in desktop: constrain width */
-  #phase-room {
-    max-width: 600px;
-    margin: 0 auto;
+  .dl-big-title {
+    position: absolute;
+    top: 52px;
+    left: 44px;
+    font-family: var(--sans);
+    font-weight: 900;
+    font-size: clamp(120px, 18vw, 220px);
+    line-height: 0.82;
+    color: var(--red);
+    letter-spacing: -0.04em;
+    text-transform: uppercase;
+    z-index: 1;
+    user-select: none;
   }
 
-  .section-head {
-    font-size: 10px;
-    margin-bottom: 20px;
+  .dl-mirror-frame {
+    position: absolute;
+    top: 50%;
+    right: 10%;
+    transform: translateY(-52%);
+    width: clamp(180px, 18vw, 240px);
+    height: clamp(235px, 23vw, 310px);
+    border: 2px solid var(--red-mid);
+    border-radius: 999px 999px 70% 70%;
+    overflow: hidden;
+    z-index: 2;
+    box-shadow: 5px 5px 0 var(--red), 8px 8px 0 #1a0428;
+  }
+  .dl-mirror-frame img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 15%;
+    display: block;
+  }
+
+  .dl-bottom-strip {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    padding: 18px 52px;
+    border-top: 1px solid var(--border);
+    background: rgba(12,12,12,0.95);
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 48px;
+    z-index: 3;
+  }
+
+  .dl-bottom-left {}
+  .dl-quote {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 14px;
+    color: var(--stone-mid);
+    line-height: 1.6;
+    border-left: 2px solid var(--red);
+    padding-left: 12px;
+    margin-bottom: 4px;
+  }
+  .dl-attr {
+    font-family: var(--mono);
+    font-size: 8px;
+    color: var(--stone-dark);
+    letter-spacing: 0.1em;
+    padding-left: 14px;
+  }
+
+  .dl-bottom-right { text-align: right; flex-shrink: 0; max-width: 340px; }
+  .dl-intro {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 12px;
+    color: var(--stone-mid);
+    line-height: 1.7;
+    margin-bottom: 6px;
+  }
+  .dl-privacy {
+    font-family: var(--mono);
+    font-size: 8px;
+    color: var(--stone-dim);
+    letter-spacing: 0.04em;
+    line-height: 1.9;
+    border-right: 2px solid #2a0810;
+    padding-right: 10px;
+  }
+
+  .dl-mirror-caption {
+    position: absolute;
+    bottom: 72px;
+    right: 52px;
+    font-family: var(--mono);
+    font-size: 7px;
+    color: var(--stone-dark);
+    font-style: italic;
+    letter-spacing: 0.08em;
+    z-index: 3;
+  }
+
+  .dl-scroll-hint {
+    position: absolute;
+    bottom: 72px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: var(--mono);
+    font-size: 7px;
+    color: var(--stone-dark);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    z-index: 4;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    animation: scrollpulse 2s ease-in-out infinite;
+  }
+  .dl-scroll-hint::after {
+    content: '';
+    width: 1px;
+    height: 22px;
+    background: var(--stone-dark);
+  }
+  @keyframes scrollpulse {
+    0%,100% { opacity: 0.3; transform: translateX(-50%) translateY(0); }
+    50% { opacity: 0.7; transform: translateX(-50%) translateY(5px); }
+  }
+
+  .app { max-width: 100%; }
+
+  .body {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 48px 52px 80px;
+    background: var(--bg);
+  }
+
+  .entry-cards-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    align-items: start;
+  }
+  .or-divider { display: none; }
+
+  #phase-room { max-width: 600px; margin: 0 auto; }
+
+  .footer-note {
+    padding: 16px 52px;
+    background: var(--bg);
   }
 }
 </style>
@@ -834,30 +814,32 @@ textarea::placeholder { color: var(--stone-dark); font-style: italic; }
 
 <div class="app">
 
-  <!-- MOBILE TOPBAR (hidden on desktop) -->
+  <!-- MOBILE TOPBAR -->
   <div class="topbar">
     <span class="topbar-name">miroir</span>
   </div>
 
-  <!-- DESKTOP LANDING (hidden on mobile) -->
+  <!-- DESKTOP LANDING -->
   <div class="desktop-landing">
     <div class="dl-topbar">
       <span class="dl-topbar-name">miroir</span>
     </div>
-    <div class="dl-left">
-      <div class="dl-title">镜室</div>
-      <div class="dl-quote">一面镜子永远等候她</div>
-      <div class="dl-attr">— 张枣，《镜中》，1984</div>
-      <p class="dl-intro-body">两个人，同一件事，各自的版本。<br>你们分别说出自己的感受，这里会帮你听见对方——以及帮对方听见你。</p>
-      <p class="dl-intro-privacy">你说的话，对方永远看不到。<br>传递给对方的，只是感受的轮廓，不是你的原话。</p>
+    <div class="dl-big-title">镜室</div>
+    <div class="dl-mirror-frame">
+      <img src="/mirror.jpg" alt="">
     </div>
-    <div class="dl-right">
-      <div class="dl-mirror-frame">
-        <img src="/mirror.jpg" alt="">
+    <div class="dl-bottom-strip">
+      <div class="dl-bottom-left">
+        <div class="dl-quote">一面镜子永远等候她</div>
+        <div class="dl-attr">— 张枣，《镜中》，1984</div>
       </div>
-      <div class="dl-mirror-caption">René Magritte · La Reproduction Interdite · 1937</div>
+      <div class="dl-bottom-right">
+        <div class="dl-intro">两个人，同一件事，各自的版本。<br>你们分别说出自己的感受，这里会帮你听见对方——以及帮对方听见你。</div>
+        <div class="dl-privacy">你说的话，对方永远看不到。<br>传递给对方的，只是感受的轮廓，不是你的原话。</div>
+      </div>
     </div>
-    <div class="scroll-hint">scroll</div>
+    <div class="dl-mirror-caption">René Magritte · La Reproduction Interdite · 1937</div>
+    <div class="dl-scroll-hint">scroll</div>
   </div>
 
   <!-- HERO (mobile only) -->
@@ -887,6 +869,7 @@ textarea::placeholder { color: var(--stone-dark); font-style: italic; }
       <div class="section-head">— 入口</div>
 
       <div class="entry-cards-row">
+
       <div class="entry-card" id="create-section">
         <div class="entry-card-num">01</div>
         <div class="entry-title">开启房间</div>
@@ -919,6 +902,7 @@ textarea::placeholder { color: var(--stone-dark); font-style: italic; }
         </div>
         <button class="btn btn-secondary" id="btn-join" onclick="joinRoom()">进入 →</button>
       </div>
+
       </div><!-- /entry-cards-row -->
 
       <div id="entry-error" class="hidden" style="margin-top:12px;"></div>
