@@ -894,8 +894,8 @@ textarea::placeholder { color: var(--stone-dark); font-style: italic; }
 
       <div class="entry-card dim" id="join-section">
         <div class="entry-card-num">02</div>
-        <div class="entry-title">加入房间</div>
-        <div class="entry-desc">输入对方给你的那串数字。</div>
+        <div class="entry-title" id="join-title">加入房间</div>
+        <div class="entry-desc" id="join-desc">输入对方给你的那串数字。</div>
         <div class="field" id="join-code-field">
           <label>房间码</label>
           <input type="text" id="join-code" placeholder="_ _ _ _" maxlength="4"
@@ -1257,11 +1257,20 @@ function renderHistory(history) {
 
 function updateStatusBar(data) {
   const bar = document.getElementById('status-bar');
-  // After submitting, status-bar stays hidden — the card handles messaging
+
+  // Hide completely once we're in analyzing or results phase
+  if (!document.getElementById('analyzing-section').classList.contains('hidden') ||
+      !document.getElementById('result-section').classList.contains('hidden')) {
+    bar.classList.add('hidden');
+    return;
+  }
+
+  // If we submitted but are waiting for the other person, show their join status in the waiting card instead
   if (S.submitted) {
     bar.classList.add('hidden');
     return;
   }
+
   bar.classList.remove('hidden');
   if (!S.otherName) {
     bar.className = 'status-bar status-waiting';
@@ -1331,6 +1340,9 @@ function loadSession() {
     document.getElementById('or-divider').classList.add('hidden');
     document.getElementById('join-code').value = roomCode.toUpperCase();
     document.getElementById('join-code-field').classList.add('hidden');
+    // Update card text — user arrived via invite link, not manual code entry
+    document.getElementById('join-title').textContent = '进入房间';
+    document.getElementById('join-desc').textContent = '对方已经在等你了。输入你的名字，进入房间。';
     // On desktop, switch grid to single column so join card isn't floating right
     document.querySelector('.entry-cards-row').style.gridTemplateColumns = '1fr';
   }
