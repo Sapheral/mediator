@@ -144,9 +144,11 @@ html, body {
   position: relative;
   box-shadow: 4px 4px 0 var(--red), 6px 6px 0 #1a0428;
 }
-.mirror-frame svg {
+.mirror-frame img {
   width: 100%;
   height: 100%;
+  object-fit: cover;
+  object-position: center 20%;
   display: block;
 }
 .mirror-caption {
@@ -725,7 +727,7 @@ textarea::placeholder { color: var(--stone-dark); font-style: italic; }
     padding-left: 14px;
   }
 
-  .dl-bottom-right { text-align: right; flex-shrink: 0; max-width: 340px; }
+  .dl-bottom-right { text-align: right; flex-shrink: 0; max-width: 420px; }
   .dl-intro {
     font-family: var(--serif);
     font-style: italic;
@@ -746,14 +748,17 @@ textarea::placeholder { color: var(--stone-dark); font-style: italic; }
 
   .dl-mirror-caption {
     position: absolute;
-    bottom: 72px;
-    right: 52px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    margin-top: clamp(140px, 14vw, 185px);
     font-family: var(--mono);
     font-size: 7px;
     color: var(--stone-dark);
     font-style: italic;
     letter-spacing: 0.08em;
     z-index: 3;
+    white-space: nowrap;
   }
 
   .dl-scroll-hint {
@@ -856,7 +861,7 @@ textarea::placeholder { color: var(--stone-dark); font-style: italic; }
   <!-- MIRROR (mobile only) -->
   <div class="mirror-section">
     <div class="mirror-frame">
-      <img src="/mirror.jpg" alt="" style="width:100%;height:100%;object-fit:cover;object-position:center 20%;">
+      <img src="/mirror.jpg" alt="">
     </div>
     <div class="mirror-caption">René Magritte · La Reproduction Interdite · 1937</div>
   </div>
@@ -1294,6 +1299,8 @@ function loadSession() {
     document.getElementById('or-divider').classList.add('hidden');
     document.getElementById('join-code').value = roomCode.toUpperCase();
     document.getElementById('join-code-field').classList.add('hidden');
+    // On desktop, switch grid to single column so join card isn't floating right
+    document.querySelector('.entry-cards-row').style.gridTemplateColumns = '1fr';
   }
 })();
 </script>
