@@ -881,9 +881,9 @@ textarea::placeholder { color: var(--stone-dark); font-style: italic; }
         <div class="entry-desc">把那串数字发给对方。各自带来你们的版本。</div>
         <div class="field">
           <label>你叫什么</label>
-          <input type="text" id="create-name" placeholder="输入你的名字_" maxlength="20">
+          <input type="text" id="create-name" placeholder="输入你的名字_" maxlength="20" oninput="updateCreateBtn()">
         </div>
-        <button class="btn btn-primary" id="btn-create" onclick="createRoom()">进入 →</button>
+        <button class="btn btn-primary" id="btn-create" onclick="createRoom()" disabled>进入 →</button>
       </div>
 
       <div class="or-divider" id="or-divider">
@@ -899,13 +899,13 @@ textarea::placeholder { color: var(--stone-dark); font-style: italic; }
         <div class="field" id="join-code-field">
           <label>房间码</label>
           <input type="text" id="join-code" placeholder="_ _ _ _" maxlength="4"
-            style="text-transform:uppercase;letter-spacing:8px;font-size:16px;">
+            style="text-transform:uppercase;letter-spacing:8px;font-size:16px;" oninput="updateJoinBtn()">
         </div>
         <div class="field">
           <label>你叫什么</label>
-          <input type="text" id="join-name" placeholder="输入你的名字_" maxlength="20">
+          <input type="text" id="join-name" placeholder="输入你的名字_" maxlength="20" oninput="updateJoinBtn()">
         </div>
-        <button class="btn btn-secondary" id="btn-join" onclick="joinRoom()">进入 →</button>
+        <button class="btn btn-primary" id="btn-join" onclick="joinRoom()" disabled>进入 →</button>
       </div>
 
       </div><!-- /entry-cards-row -->
@@ -1002,6 +1002,19 @@ let S = {
 
 let pollTimer = null;
 
+function updateCreateBtn() {
+  const name = document.getElementById('create-name').value.trim();
+  document.getElementById('btn-create').disabled = !name;
+}
+
+function updateJoinBtn() {
+  const code = document.getElementById('join-code').value.trim();
+  const name = document.getElementById('join-name').value.trim();
+  // If code field is hidden (URL param), only check name
+  const codeHidden = document.getElementById('join-code-field').classList.contains('hidden');
+  document.getElementById('btn-join').disabled = codeHidden ? !name : (!code || !name);
+}
+
 async function createRoom() {
   const name = document.getElementById('create-name').value.trim();
   if (!name) return showEntryError('请输入昵称');
@@ -1066,6 +1079,7 @@ async function submitInput() {
     } else {
       document.getElementById('input-section').classList.add('hidden');
       document.getElementById('waiting-section').classList.remove('hidden');
+      document.getElementById('status-bar').classList.add('hidden');
       document.getElementById('waiting-text').textContent = S.otherName ? '等待 ' + S.otherName + ' 提交……' : '另一面正在形成……';
     }
   } catch (e) {
@@ -1289,6 +1303,7 @@ function loadSession() {
     if (S.submitted) {
       document.getElementById('input-section').classList.add('hidden');
       document.getElementById('waiting-section').classList.remove('hidden');
+      document.getElementById('status-bar').classList.add('hidden');
     }
     updateStatusBar(); startPolling(); pollStatus();
     return;
