@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>镜室 · miroir</title>
-<link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400;700;900&family=IM+Fell+English:ital@1&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400;700;900&family=IM+Fell+English:ital@1&family=Space+Mono:wght@400;700&family=ZCOOL+XiaoWei&display=swap" rel="stylesheet">
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -76,13 +76,12 @@ html, body {
   overflow: hidden;
 }
 .hero-title {
-  font-family: var(--sans);
-  font-weight: 900;
+  font-family: 'ZCOOL XiaoWei', 'PingFang SC', serif;
+  font-weight: 400;
   font-size: 80px;
   line-height: 0.85;
   color: var(--red);
-  letter-spacing: -0.03em;
-  text-transform: uppercase;
+  letter-spacing: -0.02em;
   margin-left: -4px;
   margin-bottom: 18px;
 }
@@ -659,15 +658,14 @@ textarea::placeholder { color: var(--stone-dark); font-style: italic; }
 
   .dl-big-title {
     position: absolute;
-    top: 52px;
-    left: 44px;
-    font-family: var(--sans);
-    font-weight: 900;
-    font-size: clamp(120px, 18vw, 220px);
-    line-height: 0.82;
+    top: -10px;
+    left: 40px;
+    font-family: 'ZCOOL XiaoWei', 'PingFang SC', serif;
+    font-weight: 400;
+    font-size: clamp(160px, 22vw, 280px);
+    line-height: 0.85;
     color: var(--red);
-    letter-spacing: -0.04em;
-    text-transform: uppercase;
+    letter-spacing: -0.02em;
     z-index: 1;
     user-select: none;
   }
@@ -675,15 +673,15 @@ textarea::placeholder { color: var(--stone-dark); font-style: italic; }
   .dl-mirror-frame {
     position: absolute;
     top: 50%;
-    right: 10%;
-    transform: translateY(-52%);
-    width: clamp(180px, 18vw, 240px);
-    height: clamp(235px, 23vw, 310px);
+    right: 18%;
+    transform: translateY(-50%);
+    width: clamp(200px, 20vw, 260px);
+    height: clamp(260px, 26vw, 340px);
     border: 2px solid var(--red-mid);
     border-radius: 999px 999px 70% 70%;
     overflow: hidden;
     z-index: 2;
-    box-shadow: 5px 5px 0 var(--red), 8px 8px 0 #1a0428;
+    box-shadow: 5px 5px 0 var(--red), 8px 8px 0 #0c0c0c;
   }
   .dl-mirror-frame img {
     width: 100%;
