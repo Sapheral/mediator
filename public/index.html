@@ -19,9 +19,9 @@
   --border: #1e1e1e;
   --border-dim: #161616;
   --stone: #c8c8c8;
-  --stone-mid: #707070;
-  --stone-dim: #505050;
-  --stone-dark: #303030;
+  --stone-mid: #909090;
+  --stone-dim: #707070;
+  --stone-dark: #585858;
   --mono: 'Space Mono', 'Menlo', monospace;
   --serif: 'IM Fell English', Georgia, serif;
   --sans: 'Epilogue', sans-serif;
@@ -102,6 +102,27 @@ html, body {
   color: var(--stone-dark);
   letter-spacing: 0.12em;
   padding-left: 14px;
+}
+.hero-intro {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 12px;
+  color: var(--stone-mid);
+  line-height: 1.75;
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+.intro-privacy {
+  font-family: var(--mono);
+  font-style: normal;
+  font-size: 9px;
+  color: var(--stone-dim);
+  letter-spacing: 0.04em;
+  line-height: 1.8;
+  display: block;
+  border-left: 2px solid #2a0810;
+  padding-left: 10px;
 }
 
 /* ── MIRROR IMAGE ── */
@@ -216,10 +237,7 @@ html, body {
   display: block;
   font-family: var(--mono);
   font-size: 8px;
-  color: #606060;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  margin-bottom: 5px;
+  color: #707070;
 }
 .field input {
   width: 100%;
@@ -228,7 +246,7 @@ html, body {
   padding: 9px 11px;
   font-family: var(--mono);
   font-size: 12px;
-  color: #909090;
+  color: var(--stone-mid);
   outline: none;
   border-radius: 0;
   -webkit-appearance: none;
@@ -237,7 +255,7 @@ html, body {
   border-color: var(--red-mid);
   color: var(--stone);
 }
-.field input::placeholder { color: #505050; }
+.field input::placeholder { color: #585858; }
 
 /* ── BUTTONS ── */
 .btn {
@@ -275,7 +293,7 @@ html, body {
 .or-divider-text {
   font-family: var(--mono);
   font-size: 8px;
-  color: #202020;
+  color: #606060;
   letter-spacing: 0.1em;
 }
 
@@ -306,13 +324,7 @@ html, body {
   font-size: 9px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--stone-dark);
-  background: transparent;
-  border: 1px solid var(--border);
-  padding: 7px 14px;
-  cursor: pointer;
-  border-radius: 0;
-}
+  color: var(--stone-mid);
 .btn-copy:hover { border-color: var(--red-mid); color: var(--stone-mid); }
 
 /* ── STATUS BAR ── */
@@ -402,7 +414,7 @@ textarea::placeholder { color: var(--stone-dark); font-style: italic; }
   border-bottom: 1px solid var(--border);
 }
 .card-header.mine { color: var(--stone-mid); background: #0f0f0f; }
-.card-header.both { color: #5a3a10; background: #0c0904; }
+.card-header.both { color: #7a5a20; background: #0c0904; }
 .card-header.neutral { color: var(--stone-dark); background: #0f0f0f; }
 .card-body {
   padding: 14px 14px 14px 17px;
@@ -430,7 +442,7 @@ textarea::placeholder { color: var(--stone-dark); font-style: italic; }
 .consent-status {
   font-family: var(--mono);
   font-size: 9px;
-  color: var(--stone-dark);
+  color: var(--stone-mid);
   flex: 1;
   letter-spacing: 0.06em;
 }
@@ -443,7 +455,7 @@ textarea::placeholder { color: var(--stone-dark); font-style: italic; }
   cursor: pointer;
   border: 1px solid var(--border);
   background: transparent;
-  color: var(--stone-dark);
+  color: var(--stone-mid);
   border-radius: 0;
 }
 .consent-btn.done {
@@ -525,14 +537,14 @@ textarea::placeholder { color: var(--stone-dark); font-style: italic; }
   text-transform: uppercase;
   border-bottom: 1px solid var(--border);
   background: var(--bg3);
-  color: var(--stone-dark);
+  color: var(--stone-mid);
 }
 .fitem-q {
   padding: 10px 14px 10px 16px;
   font-family: var(--serif);
   font-style: italic;
   font-size: 13px;
-  color: var(--stone-dark);
+  color: var(--stone-mid);
   border-bottom: 1px solid var(--border);
 }
 .fitem-ans {
@@ -578,7 +590,7 @@ textarea::placeholder { color: var(--stone-dark); font-style: italic; }
   background: var(--bg);
   font-family: var(--mono);
   font-size: 8px;
-  color: #606060;
+  color: #888888;
   line-height: 2.2;
   letter-spacing: 0.06em;
 }
@@ -612,6 +624,11 @@ textarea::placeholder { color: var(--stone-dark); font-style: italic; }
     <div class="hero-title">镜室</div>
     <div class="hero-quote">一面镜子永远等候她</div>
     <div class="hero-attr">— 张枣，《镜中》，1984</div>
+    <div class="hero-intro">
+      两个人，同一件事，各自的版本。<br>
+      你们分别写下自己的感受，AI 在两者之间充当中间人——帮你理解对方，帮对方理解你。<br><br>
+      <span class="intro-privacy">你说的话，对方永远看不到。AI 只会把感受的核心传递过去，不会引用你的原话。</span>
+    </div>
   </div>
 
   <!-- MIRROR -->
@@ -619,7 +636,7 @@ textarea::placeholder { color: var(--stone-dark); font-style: italic; }
     <div class="mirror-frame">
       <img src="/mirror.jpg" alt="" style="width:100%;height:100%;object-fit:cover;object-position:center 20%;">
     </div>
-    <div class="mirror-caption">after Magritte · La Reproduction Interdite · 1937</div>
+    <div class="mirror-caption">René Magritte · La Reproduction Interdite · 1937</div>
   </div>
 
   <!-- MAIN BODY -->
@@ -983,7 +1000,7 @@ function updateStatusBar(data) {
     bar.textContent = S.otherName + ' 已进入';
   } else if (data && data.status === 'analyzing') {
     bar.className = 'status-bar status-analyzing';
-    bar.textContent = '镜中……';
+    bar.textContent = '两面已合，正在分析……';
   } else if (data && data.status === 'analyzed') {
     bar.className = 'status-bar status-ok';
     bar.textContent = '分析完成';
