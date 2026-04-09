@@ -947,7 +947,7 @@ textarea::placeholder { color: var(--stone-dark); font-style: italic; }
       <!-- Analyzing -->
       <div id="analyzing-section" class="hidden">
         <div class="card">
-          <div class="card-header neutral">镜中</div>
+          <div class="card-header neutral">另一面正在形成</div>
           <div class="card-body"><div class="dots"><span></span><span></span><span></span></div></div>
         </div>
       </div>
@@ -1106,6 +1106,7 @@ async function pollStatus() {
     if (data.status === 'analyzing' && S.submitted) {
       document.getElementById('waiting-section').classList.add('hidden');
       document.getElementById('analyzing-section').classList.remove('hidden');
+      document.getElementById('status-bar').classList.add('hidden');
     }
     if (data.status === 'analyzed') {
       updateConsent(data.consentA, data.consentB, data.forBoth);
@@ -1231,7 +1232,7 @@ function updateStatusBar(data) {
     bar.textContent = S.otherName + ' 已进入';
   } else if (data && data.status === 'analyzing') {
     bar.className = 'status-bar status-analyzing';
-    bar.textContent = '镜中……';
+    bar.textContent = '另一面正在形成……';
   } else if (data && data.status === 'analyzed') {
     bar.className = 'status-bar status-ok';
     bar.textContent = '分析完成';
