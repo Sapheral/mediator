@@ -64,7 +64,10 @@ async function checkRateLimit(ip, action, maxPerHour) {
 
 // Get client IP (works behind Vercel proxy)
 function getIP(req) {
-  return req.headers['x-forwarded-for']?.split(',')[0]?.trim() || req.ip || 'unknown';
+  // Vercel sets x-real-ip; x-forwarded-for may contain multiple proxies
+  return req.headers['x-real-ip'] ||
+    req.headers['x-forwarded-for']?.split(',')[0]?.trim() ||
+    req.ip || 'unknown';
 }
 
 // ─── API: Create Room ───
@@ -72,8 +75,8 @@ app.post('/api/room/create', async (req, res) => {
   const { name } = req.body;
   if (!name || !name.trim()) return res.status(400).json({ error: '请输入昵称' });
 
-  // Rate limit: 10 rooms per IP per hour
-  if (!await checkRateLimit(getIP(req), 'create', 10)) {
+  // Rate limit: 30 rooms per IP per hour
+  if (!await checkRateLimit(getIP(req), 'create', 30)) {
     return res.status(429).json({ error: '操作过于频繁，请稍后再试' });
   }
 
@@ -238,8 +241,8 @@ app.post('/api/room/followup', async (req, res) => {
   const { code, token, question } = req.body;
   if (!question || !question.trim()) return res.status(400).json({ error: '请输入内容' });
 
-  // Rate limit: 30 follow-ups per IP per hour
-  if (!await checkRateLimit(getIP(req), 'followup', 30)) {
+  // Rate limit: 60 follow-ups per IP per hour
+  if (!await checkRateLimit(getIP(req), 'followup', 60)) {
     return res.status(429).json({ error: '追问过于频繁，请稍后再试' });
   }
   const room = await getRoom(code);
