@@ -1058,6 +1058,11 @@ function enterRoom(isCreator) {
     document.getElementById('display-code').textContent = S.code;
   }
   document.getElementById('input-label').textContent = S.myName + '，你带来了什么？';
+  // Write token into URL so user can recover session by revisiting this URL
+  const myUrl = new URL(window.location);
+  myUrl.searchParams.set('room', S.code);
+  myUrl.searchParams.set('t', S.token);
+  window.history.replaceState(null, '', myUrl.toString());
   updateStatusBar(); startPolling();
 }
 
@@ -1335,15 +1340,61 @@ function loadSession() {
   }
   const urlParams = new URLSearchParams(window.location.search);
   const roomCode = urlParams.get('room');
+  const urlToken = urlParams.get('t');
+
+  // Recovery: URL has both room code and token — restore session from server
+  if (roomCode && urlToken) {
+    (async () => {
+      try {
+        const r = await fetch(`/api/room/status?code=${roomCode.toUpperCase()}&token=${urlToken}`);
+        if (!r.ok) {
+          // Token invalid or room expired — show entry page
+          if (r.status === 404) showEntryError('房间已过期或不存在。');
+          else if (r.status === 403) showEntryError('链接无效，请重新获取。');
+          return;
+        }
+        const data = await r.json();
+        // Determine role from token by checking which name matches
+        S.code = roomCode.toUpperCase();
+        S.token = urlToken;
+        S.myName = data.myName || '你';
+        S.otherName = data.otherName || null;
+        S.submitted = data.mySubmitted || false;
+        S.role = data.nameA === S.myName ? 'a' : 'b';
+        saveSession();
+
+        document.getElementById('phase-entry').classList.add('hidden');
+        document.getElementById('phase-room').classList.remove('hidden');
+        document.getElementById('input-label').textContent = S.myName + '，你带来了什么？';
+
+        if (data.status === 'analyzed') {
+          await fetchAndShowResults();
+        } else if (S.submitted) {
+          document.getElementById('input-section').classList.add('hidden');
+          document.getElementById('waiting-section').classList.remove('hidden');
+          document.getElementById('status-bar').classList.add('hidden');
+          document.getElementById('waiting-text').textContent = S.otherName ? '等待 ' + S.otherName + ' 写下另一面……' : '等待对方加入并写下另一面……';
+        } else if (S.role === 'a' && !S.otherName) {
+          document.getElementById('room-code-section').classList.remove('hidden');
+          document.getElementById('display-code').textContent = S.code;
+        }
+
+        updateStatusBar(); startPolling();
+      } catch (e) {
+        showEntryError('恢复会话失败，请重试。');
+      }
+    })();
+    return;
+  }
+
+  // Invite: URL has room code but no token — show join form
   if (roomCode) {
     document.getElementById('create-section').classList.add('hidden');
     document.getElementById('or-divider').classList.add('hidden');
     document.getElementById('join-code').value = roomCode.toUpperCase();
     document.getElementById('join-code-field').classList.add('hidden');
-    // Update card text — user arrived via invite link, not manual code entry
     document.getElementById('join-title').textContent = '进入房间';
     document.getElementById('join-desc').textContent = '对方已经在等你了。输入你的名字，进入房间。';
-    // On desktop, switch grid to single column so join card isn't floating right
     document.querySelector('.entry-cards-row').style.gridTemplateColumns = '1fr';
   }
 })();
